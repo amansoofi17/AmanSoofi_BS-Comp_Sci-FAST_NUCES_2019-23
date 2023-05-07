@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PersonalInformation">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/accounts_toolbar"
+            layout="@layout/personal_info_toolbar"
+            android:onClick="update_personalInfo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Your Personal Information Carefully"
+                android:textSize="15dp"
+                android:layout_marginBottom="30dp"
+                android:padding="10dp"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email address"
+                android:textSize="20dp"
+                android:padding="10dp"
+                />
+            <EditText
+                android:id="@+id/info_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="user's mail"
+                android:textSize="20dp"
+                android:padding="10dp"
+                android:layout_margin="10dp"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Birthday"
+                android:textSize="20dp"
+                android:padding="10dp"
+                />
+            <EditText
+                android:id="@+id/info_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="user's Birthday"
+                android:textSize="20dp"
+                android:padding="10dp"
+                android:layout_margin="10dp"
+                />
+
+
+            <RadioGroup
+                android:id="@+id/Gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/male"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="0.33"
+                    android:text="Male"
+
+                    />
+
+                <RadioButton
+                    android:id="@+id/female"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+
+                    android:layout_weight="0.33"
+                    android:text="Female" />
+
+                <RadioButton
+                    android:id="@+id/unknown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="0.3"
+                    android:text="Unknown" />
+            </RadioGroup>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

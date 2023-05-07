@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/new/signup">
+        <file>signup image/images (2).jpg</file>
+    </qresource>
+</RCC>

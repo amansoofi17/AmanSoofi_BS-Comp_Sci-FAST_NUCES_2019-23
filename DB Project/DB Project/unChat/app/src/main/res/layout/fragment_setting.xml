@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+
+            <include
+                android:id="@+id/settings_toolbar"
+                layout="@layout/setting_toolbar"
+                />
+            <LinearLayout
+                android:layout_marginTop = "50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="@color/white"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/notification_buttton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.75"
+                    android:backgroundTint="@color/white"
+                    android:text="Notifications"
+                    android:textColor="@color/black" />
+
+                <ImageButton
+                    android:id="@+id/notification_Imagebuttton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="0.25"
+                    android:background="@drawable/ic_right_click"
+                    android:backgroundTint="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/personalInfoButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:text="Personal Infromation"
+                    android:layout_weight="0.75"
+                    android:textColor="@color/black"/>
+                <ImageButton
+                    android:id="@+id/personalInfoImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_right_click"
+                    android:layout_weight="0.25"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/black"
+
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/changePassButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:text="Change Password"
+                    android:onClick="open_changePassword"
+                    android:layout_weight="0.75"
+                    android:textColor="@color/black"/>
+                <ImageButton
+                    android:id="@+id/changePasImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_right_click"
+                    android:layout_weight="0.25"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/black"
+
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</FrameLayout>
+

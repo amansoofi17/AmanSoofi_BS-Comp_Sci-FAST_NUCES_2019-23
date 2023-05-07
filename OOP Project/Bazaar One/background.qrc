@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>Background/account.png</file>
+        <file>Background/additems.png</file>
+        <file>Background/authority.jpg</file>
+        <file>Background/Basket.png</file>
+        <file>Background/catagory.png</file>
+        <file>Background/Home.png</file>
+        <file>Background/loginButton.jpeg</file>
+        <file>Background/next.jpeg</file>
+        <file>Background/previous.jpeg</file>
+        <file>Background/products.png</file>
+        <file>Background/profit.png</file>
+        <file>Background/Requests.png</file>
+        <file>Background/warning.jpeg</file>
+        <file>Background/window.jpeg</file>
+        <file>Background/black.png</file>
+        <file>Background/white.jpg</file>
+        <file>Background/search.png</file>
+    </qresource>
+</RCC>

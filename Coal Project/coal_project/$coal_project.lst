@@ -1,0 +1,3121 @@
+Microsoft (R) Macro Assembler Version 11.00.50727.1	    12/21/20 15:23:05
+project.asm						     Page 1 - 1
+
+
+				INCLUDE Irvine32.inc
+			      C ; Include file for Irvine32.lib             (Irvine32.inc)
+			      C 
+			      C ;OPTION CASEMAP:NONE		; optional: make identifiers case-sensitive
+			      C 
+			      C INCLUDE SmallWin.inc		; MS-Windows prototypes, structures, and constants
+			      C .NOLIST
+			      C .LIST
+			      C 
+			      C INCLUDE VirtualKeys.inc
+			      C ; VirtualKeys.inc
+			      C .NOLIST
+			      C .LIST
+			      C 
+			      C 
+			      C .NOLIST
+			      C .LIST
+			      C 
+ 00000000			.data
+ = 0000001E			input_length = 30
+ 00000000 20 20 20 20 20	str_title byte  "                 *********************************MACHINE CODE GENERATOR***********************     ",0dh,0ah,0
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   4D 41 43 48 49
+	   4E 45 20 43 4F
+	   44 45 20 47 45
+	   4E 45 52 41 54
+	   4F 52 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   2A 2A 2A 2A 2A
+	   20 20 20 20 20
+	   0D 0A 00
+ 00000067 20 20 20 45 4E	str1 byte "   ENTER ASSEMBLY INSTRUCTION : ",0dh,0ah,0
+	   54 45 52 20 41
+	   53 53 45 4D 42
+	   4C 59 20 49 4E
+	   53 54 52 55 43
+	   54 49 4F 4E 20
+	   3A 20 0D 0A 00
+ 0000008A 20 4D 41 43 48	result byte " MACHINE CODE IN HEXADECIMAL : ",0dh,0ah,0
+	   49 4E 45 20 43
+	   4F 44 45 20 49
+	   4E 20 48 45 58
+	   41 44 45 43 49
+	   4D 41 4C 20 3A
+	   20 0D 0A 00
+ 000000AC  0000001E [		assembly_instruction byte input_length dup(?)
+	    00
+	   ]
+ 000000CA 00000000		length_string dword 0 
+ 000000CE  00000005 [		nemonic byte 5 dup(?)
+	    00
+	   ]
+ 000000D3 00000000		n_length dword 0
+ 000000D7  00000032 [		s_operand byte 50 dup(0)
+	    00
+	   ]
+ 00000109 00000000		s_length dword 0
+ 0000010D  00000032 [		d_operand byte 50 dup(0)
+	    00
+	   ]
+ 0000013F 00000000		d_length dword 0
+
+ 00000143 62 79 74 65 2C	data_sizes byte "byte,word,dwor",0
+	   77 6F 72 64 2C
+	   64 77 6F 72 00
+ 00000152 00			data_size_count byte 0 ;initially zero
+ 00000153 00000000		displacement_value dword 0
+ 00000157  00000008 [		temp_displacement_value byte 8 dup(?)
+	    00
+	   ]
+ 0000015F 00000000		immidiate dword 0 
+ 00000163 00			check_immidiate byte 0 ;initially zero means no immediate value 
+
+ 00000164 65 61 78 2C 65	register32 byte "eax,ecx,edx,ebx,esp,ebp,esi,edi",0
+	   63 78 2C 65 64
+	   78 2C 65 62 78
+	   2C 65 73 70 2C
+	   65 62 70 2C 65
+	   73 69 2C 65 64
+	   69 00
+ 00000184 61 78 2C 63 78	register16 byte "ax,cx,dx,bx,sp,bp,si,di",0
+	   2C 64 78 2C 62
+	   78 2C 73 70 2C
+	   62 70 2C 73 69
+	   2C 64 69 00
+ 0000019C 61 6C 2C 63 6C	register_lower_8 byte "al,cl,dl,bl",0
+	   2C 64 6C 2C 62
+	   6C 00
+ 000001A8 61 68 2C 63 68	register_higher_8 byte "ah,ch,dh,bh",0
+	   2C 64 68 2C 62
+	   68 00
+ 000001B4 30 30 30 2C 30	register_values byte "000,001,010,011,100,101,110,111",0
+	   30 31 2C 30 31
+	   30 2C 30 31 31
+	   2C 31 30 30 2C
+	   31 30 31 2C 31
+	   31 30 2C 31 31
+	   31 00
+ 000001D4 00			check_al byte ? ;checking if operand is al 
+ 000001D5 00			check_ax byte ? ;checking if operand is ax
+ 000001D6 00			check_16bit byte 0
+
+ 000001D7 6D 6F 76 2C 61	opcode_extension_nemonic byte "mov,add,sub,mul,div,inc,dec",0
+	   64 64 2C 73 75
+	   62 2C 6D 75 6C
+	   2C 64 69 76 2C
+	   69 6E 63 2C 64
+	   65 63 00
+ 000001F3 30 30 30 2C 30	opcode_extension byte "000,000,101,100,110,000,001",0
+	   30 30 2C 31 30
+	   31 2C 31 30 30
+	   2C 31 31 30 2C
+	   30 30 30 2C 30
+	   30 31 00
+ 0000020F 00			nemonic_count byte 0
+ 00000210 00			nemonic_number byte 0
+
+
+ 00000211 00			d_bit byte ?
+ 00000212 00			w_bit byte ?
+ 00000213 00			d_operand_check byte 0  ;set initially to zero if destination operand is register then it sets
+ 00000214 00			s_operand_check byte 00 ;set initially to 00 (means there is immediate value present there)
+				                        ;if source operand is register then it sets
+										;if source operand is memory then it clears
+ 00000215 00			mod_bits byte ?
+ 00000216 00			check_displacement byte 00 ; initially 00 means there is no displacement 
+				                           ; if check_displacement = 0 then 8bit displacement 
+				                           ; and for 16bit/32bit displacement  check_diplacement = 1
+ 00000217 00			check_one_operand byte 0
+ 00000218  00000003 [		register_bits byte 3 dup(?)
+	    00
+	   ]
+ 0000021B 00			register_number byte ? ; this is used for storing the number of reigster for calculating the
+				                       ; register bits of the r/m byte
+ 0000021C 00			register_count  byte ? ; it is like a register count which is assigned to the register number
+ 0000021D  00000003 [		r_m_bits byte 3 dup(?)
+	    00
+	   ]
+ 00000220 00			r_m_number byte 0 ;initially zero it is set according to respective match and values 
+
+ 00000221 00			prefix_byte byte ?
+ 00000222  00000008 [		complete_r_mbyte byte 8 dup(?)
+	    00
+	   ]
+
+ 0000022A 00			memory_format byte 0 ;initially zero 
+				;  memory_fomrat = 0 when there is direct address normal variable like var8,var32
+				;  memory_format = 1 if this type of format [esi] or [ebx+esi]
+				                     ; [esi+//displacement] [ebx+edi+//displacement]
+ 0000022B 00			hex_value_opcode byte 0
+ 0000022C 01 00 00 00 01	mov_opcode byte 1,0,0,0,1,0,2 dup(?)
+	   00
+	   00000002 [
+	    00
+	   ]
+ 00000234 00 00 00 00 00	add_opcode byte 0,0,0,0,0,0,2 dup(?)
+	   00
+	   00000002 [
+	    00
+	   ]
+ 0000023C 00 00 01 00 01	sub_opcode byte 0,0,1,0,1,0,2 dup(?)
+	   00
+	   00000002 [
+	    00
+	   ]
+ 00000244 01 00 00 00 00	xchg_opcode byte 1,0,0,0,0,1,2 dup(?)
+	   01
+	   00000002 [
+	    00
+	   ]
+
+ 00000000			.code
+ 00000000			main proc
+
+ 00000000  E8 00000000 E	call crlf
+ 00000005  E8 00000000 E	call crlf
+				;display str on console
+ 0000000A  BA 00000000 R	mov edx,offset str_title
+ 0000000F  E8 00000000 E	call writestring
+ 00000014  E8 00000000 E	call crlf
+ 00000019  E8 00000000 E	call crlf
+
+
+				;display str1 on console
+ 0000001E  BA 00000067 R	mov edx,offset str1
+ 00000023  E8 00000000 E	call writestring
+
+				;take input of assembly instruction 
+ 00000028  B9 0000001E		mov ecx,input_length
+ 0000002D  BA 000000AC R	mov edx,offset assembly_instruction
+ 00000032  E8 00000000 E	call readstring
+ 00000037  A3 000000CA R	mov length_string,eax 
+
+ 0000003C  E8 00000000 E	call crlf
+ 00000041  E8 00000000 E	call crlf
+
+
+				;seperating the nemonic,source operand and destination operand from assembly instruction
+ 00000046  BE 000000AC R	mov esi,offset assembly_instruction
+ 0000004B  B1 20		mov cl,32
+ 0000004D  BF 000000CE R	mov edi,offset nemonic
+
+				;seperating the nemonic
+ 00000052  B0 6D		mov al,'m'
+ 00000054			n_start:
+ 00000054  38 0E		cmp [esi],cl
+ 00000056  74 2F		je n_over
+ 00000058  8A 1E		mov bl,[esi]
+ 0000005A  3A D8		cmp bl,al
+ 0000005C  74 0C		jz continue
+ 0000005E  88 1F		mov [edi],bl
+ 00000060  46			inc esi
+ 00000061  47			inc edi
+ 00000062  FF 05 000000D3 R	inc n_length
+ 00000068  EB EA		jmp n_start
+
+ 0000006A			continue:
+ 0000006A  BE 000000AC R	mov esi,offset assembly_instruction
+ 0000006F  BF 000000CE R	mov edi,offset nemonic
+ 00000074  B9 00000003		mov ecx,3
+ 00000079			movzx_nemonic:
+ 00000079  8A 1E		mov bl,[esi]
+ 0000007B  88 1F		mov [edi],bl
+ 0000007D  46			inc esi
+ 0000007E  47			inc edi
+ 0000007F  FF 05 000000D3 R	inc n_length
+ 00000085  E2 F2		loop movzx_nemonic
+
+ 00000087			n_over:
+ 00000087  46			inc esi
+ 00000088  BF 0000010D R	mov edi,offset d_operand
+ 0000008D  B1 2C		mov cl,44
+ 0000008F  B2 0A		mov dl,10
+				;seperating the destination 
+ 00000091			d_start:
+ 00000091  38 0E		cmp [esi],cl
+ 00000093  74 16		je d_over
+ 00000095  38 16		cmp [esi],dl
+ 00000097  0F 84 000001B1	je one_operand
+ 0000009D  8A 1E		mov bl,[esi]
+ 0000009F  88 1F		mov [edi],bl
+ 000000A1  46			inc esi
+ 000000A2  47			inc edi
+ 000000A3  FF 05 0000013F R	inc d_length
+ 000000A9  EB E6		jmp d_start
+
+ 000000AB			d_over:
+ 000000AB  46			inc esi
+ 000000AC  BF 000000D7 R	mov edi,offset s_operand
+ 000000B1  B1 0A		mov cl,10
+
+				 ;seperating the source
+ 000000B3			s_start:
+ 000000B3  38 0E		cmp [esi],cl
+ 000000B5  74 0E		je s_over
+ 000000B7  8A 1E		mov bl,[esi]
+ 000000B9  88 1F		mov [edi],bl
+ 000000BB  46			inc esi
+ 000000BC  47			inc edi
+ 000000BD  FF 05 00000109 R	inc s_length
+ 000000C3  EB EE		jmp s_start
+
+ 000000C5			s_over:
+ 000000C5  FF 0D 00000109 R	dec s_length
+
+				;firstly we have to check the values of source and destination operands and check if the immediate
+				;value occurs
+
+ 000000CB  E8 000004F9		call check_source_operand
+ 000000D0  E8 000006A8		call check_destination_operand
+ 000000D5  E8 0000080D		call store_immidiate_value
+				; after checking we have to calculate the opcode 
+
+				;firstly for the opcode if any operand from both is al/ax
+
+ 000000DA  E8 00000196		call cal_opcode_if_accumlator
+ 000000DF  80 3D 0000022B R	cmp hex_value_opcode,0   ;as i  initially assign zero to hex_value_opcode now after comparasion if it
+	   00
+				                         ;is zero then no operand in the instruction is al/ax/eax
+ 000000E6  75 28		jnz calculate_r_m_byte 
+
+				; now we have to calculate the opcode if there is immediate operand in the source operand
+
+				;firstly we have to check whether there is immediate value exists
+
+ 000000E8  E8 000007FA		call store_immidiate_value
+
+ 000000ED  80 3D 00000163 R	cmp check_immidiate,1 ;if it is 1 then immediate value exists in the instruction
+	   01
+ 000000F4  75 15		jnz check_next
+ 000000F6  E8 00000303		call cal_machine_code_if_mem_reg_immidiate
+
+				;here we know that there is immediate value in the source operand so if there is register
+				;in the destination we can find our machine code directly
+
+ 000000FB  80 3D 00000213 R	cmp d_operand_check,1    ;checking destination operand is register or not  
+	   01
+ 00000102  75 0C		jnz calculate_r_m_byte
+
+ 00000104  E8 00000AD9		call cal_one_register_one_immidaite_value
+ 00000109  EB 4B		jmp final_result
+
+ 0000010B			check_next:  ;after checking above conditions now we have confirm that now we have register to register/
+				             ;register to memory or memory to register
+ 0000010B  E8 000003DE		call cal_opcode
+
+ 00000110			calculate_r_m_byte:
+				; now we have to caluculate r/m byte 
+ 00000110  80 3D 00000163 R	cmp check_immidiate,1  ;if there is immediate data present in the source operand means that there is
+	   01
+				                       ; one memory opernad to immediate data 
+ 00000117  75 0C		jnz check_next1
+
+ 00000119  68 0000010D R	push offset d_operand
+ 0000011E  E8 00000CBF		call cal_RMbyte
+ 00000123  EB 31		jmp final_result
+ 00000125			check_next1:
+				; now firstly we have to find that memory is present at which operand push offset of that operand on
+				;stack
+
+ 00000125  80 3D 00000214 R	cmp s_operand_check,0
+	   00
+ 0000012C  75 0C		jnz check_next2
+ 0000012E  68 000000D7 R	push offset s_operand
+ 00000133  E8 00000CAA		call cal_RMbyte
+ 00000138  EB 1C		jmp final_result
+
+ 0000013A			check_next2:       ; if firstly condition fails it means memory operand is present at the destination
+				                       ; operand if destination operand is also the register then we further check
+ 0000013A  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 00000141  75 0C		jnz check_next3
+ 00000143  68 0000010D R	push offset d_operand
+ 00000148  E8 00000C95		call cal_RMbyte
+ 0000014D  EB 07		jmp final_result
+
+ 0000014F			check_next3:
+				;now it is confirmed that both operands are registers then
+
+ 0000014F  E8 00000C31		call cal_RMbyte_of_register_operand
+ 00000154  EB 00		jmp final_result
+
+
+ 00000156			final_result:
+ 00000156  E8 00001098		call cal_final_result
+
+ 0000015B			again_call:
+ 0000015B  80 3D 00000216 R	cmp check_displacement,00
+	   00
+ 00000162  0F 84 0000009F	jz check_imm 
+ 00000168  B8 00000000		mov eax,0
+ 0000016D  80 3D 00000216 R	cmp check_displacement,0
+	   00
+ 00000174  75 19		jnz check_16
+ 00000176  A0 00000153 R	mov al,byte ptr displacement_value
+ 0000017B  C1 C8 04		ror eax,4
+ 0000017E  E8 00000000 E	call writehex
+ 00000183  B0 20		mov al,' '
+ 00000185  E8 00000000 E	call writechar
+ 0000018A  E9 000000DA		jmp ex
+ 0000018F			check_16:
+ 0000018F  80 3D 000001D6 R	cmp check_16bit,1
+	   01
+ 00000196  75 36		jnz check_32
+ 00000198  66| 8B 1D		mov bx,word ptr displacement_value
+	   00000153 R
+ 0000019F  66| A1		mov ax,word ptr displacement_value+2
+	   00000155 R
+ 000001A5  C0 C8 04		ror al,4
+ 000001A8  C0 C4 04		rol ah,4
+ 000001AB  66| A3		mov word ptr displacement_value+2,ax
+	   00000155 R
+ 000001B1  66| 89 1D		mov word ptr displacement_value,bx
+	   00000153 R
+ 000001B8  A1 00000153 R	mov eax,displacement_value
+ 000001BD  E8 00000000 E	call writehex
+ 000001C2  B0 20		mov al,' '
+ 000001C4  E8 00000000 E	call writechar
+ 000001C9  E9 0000009B		jmp ex
+ 000001CE			check_32:
+ 000001CE  66| 8B 1D		mov bx,word ptr displacement_value
+	   00000153 R
+ 000001D5  C0 CB 04		ror bl,4
+ 000001D8  C0 C7 04		rol bh,4
+ 000001DB  66| A1		mov ax,word ptr displacement_value+2
+	   00000155 R
+ 000001E1  C0 C8 04		ror al,4
+ 000001E4  C0 C4 04		rol ah,4
+ 000001E7  66| A3		mov word ptr displacement_value+2,ax
+	   00000155 R
+ 000001ED  66| 89 1D		mov word ptr displacement_value,bx
+	   00000153 R
+ 000001F4  A1 00000153 R	mov eax,displacement_value
+ 000001F9  E8 00000000 E	call writehex
+ 000001FE  B0 20		mov al,' '
+ 00000200  E8 00000000 E	call writechar
+ 00000205  EB 62		jmp ex
+
+ 00000207			check_imm:
+				; if immediate exist then prints in little endian
+ 00000207  80 3D 00000214 R	cmp s_operand_check,00
+	   00
+ 0000020E  75 59		jnz ex
+ 00000210  B8 00000000		mov eax,0
+ 00000215  66| 8B 1D		mov bx,word ptr immidiate
+	   0000015F R
+ 0000021C  C0 CB 04		ror bl,4
+ 0000021F  C0 C7 04		rol bh,4
+ 00000222  66| A1		mov ax,word ptr immidiate+2
+	   00000161 R
+ 00000228  C0 C8 04		ror al,4
+ 0000022B  C0 C4 04		rol ah,4
+ 0000022E  66| A3		mov word ptr immidiate+2,ax
+	   00000161 R
+ 00000234  66| 89 1D		mov word ptr immidiate,bx
+	   0000015F R
+ 0000023B  A1 0000015F R	mov eax,immidiate
+ 00000240  E8 00000000 E	call writehex
+ 00000245  B0 20		mov al,' '
+ 00000247  E8 00000000 E	call writechar
+ 0000024C  EB 1B		jmp ex
+
+ 0000024E			one_operand:
+ 0000024E  C6 05 00000217 R	mov check_one_operand,1
+	   01
+ 00000255  E8 00000523		call check_destination_operand
+ 0000025A  68 0000010D R	push offset d_operand
+ 0000025F  E8 000007B9		call cal_one_operand_memory_register
+ 00000264  E8 00000F8A		call cal_final_result
+				;jmp again_call
+ 00000269			ex:
+ 00000269  E8 00000000 E	call crlf
+				exit
+ 00000275			main ENDP
+
+
+ 00000275			cal_opcode_if_accumlator proc
+ 00000275  55			push ebp
+ 00000276  8B EC		mov ebp,esp
+ 00000278  C6 05 00000214 R	mov s_operand_check,0 ;initially zero
+	   00
+ 0000027F  C6 05 00000213 R	mov d_operand_check,0 ;initially zero
+	   00
+ 00000286  C6 05 00000210 R	mov nemonic_number,0  ;initially zero
+	   00
+				 
+ 0000028D  E8 00000337		call check_source_operand  ;checking the source operand
+ 00000292  E8 000004E6		call check_destination_operand ;checking the destination operand  
+ 00000297  E8 00000EF6		call cal_nemonic_number
+
+ 0000029C  80 3D 00000214 R	cmp s_operand_check,1
+	   01
+ 000002A3  0F 85 00000097	jnz check_dest
+ 000002A9  68 000000D7 R	push offset s_operand
+ 000002AE  E8 000001DD		call check_operand_al ;checking whether source operand is al
+ 000002B3  68 000000D7 R	push offset s_operand
+ 000002B8  E8 00000202		call check_operand_ax ;checking whether source operand is ax
+ 000002BD  8A 15 00000210 R	mov dl,nemonic_number
+ 000002C3  80 FA 00		cmp dl,0
+ 000002C6  75 33		jnz xchg_condition
+ 000002C8  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 000002CF  75 2A		jnz xchg_condition
+ 000002D1  80 3D 000001D4 R	cmp check_al,1
+	   01
+ 000002D8  75 0C		jnz check_ax0
+ 000002DA  C6 05 0000022B R	mov hex_value_opcode,0A0h
+	   A0
+ 000002E1  E9 00000116		jmp ex
+ 000002E6			check_ax0:
+ 000002E6  80 3D 000001D5 R	cmp check_ax,1
+	   01
+ 000002ED  75 51		jnz check_dest
+ 000002EF  C6 05 0000022B R	mov hex_value_opcode,0A1h
+	   A1
+ 000002F6  E9 00000101		jmp ex
+
+ 000002FB			xchg_condition:
+ 000002FB  B0 78		mov al,'x' ; checking for xchg nemonic
+ 000002FD  BF 000000CE R	mov edi,offset nemonic
+ 00000302  38 07		cmp [edi],al
+ 00000304  75 3A		jnz check_dest
+ 00000306  80 3D 000001D5 R	cmp check_ax,1
+	   01
+ 0000030D  75 31		jnz check_dest
+ 0000030F  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 00000316  75 28		jnz check_dest
+ 00000318  C6 05 0000021B R	mov register_number,0 ;initially zero
+	   00
+ 0000031F  68 0000010D R	push offset d_operand
+ 00000324  E8 00000D36		call cal_register_number
+ 00000329  C6 05 0000022B R	mov hex_value_opcode,90h
+	   90
+ 00000330  A0 0000021B R	mov al,register_number
+ 00000335  00 05 0000022B R	add hex_value_opcode,al
+ 0000033B  E9 000000BC		jmp ex
+
+
+				;; checking destination operand 
+ 00000340			check_dest:
+ 00000340  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 00000347  0F 85 000000AF	jnz ex
+ 0000034D  80 3D 00000163 R	cmp check_immidiate,1 ;if there is immediate value and destination operand should be register then further
+	   01
+				                      ;checking is continued
+ 00000354  0F 85 000000A2	jnz ex
+ 0000035A  68 0000010D R	push offset d_operand
+ 0000035F  E8 0000012C		call check_operand_al ;checking whether source operand is al
+ 00000364  68 0000010D R	push offset d_operand
+ 00000369  E8 00000151		call check_operand_ax ;checking whether source operand is ax
+ 0000036E  8A 15 00000210 R	mov dl,nemonic_number
+
+ 00000374  80 FA 00		cmp dl,0
+ 00000377  75 24		jnz next_check
+ 00000379  80 3D 000001D4 R	cmp check_al,1
+	   01
+ 00000380  75 09		jnz check_ax1
+ 00000382  C6 05 0000022B R	mov hex_value_opcode,0A0h
+	   A0
+ 00000389  EB 71		jmp ex
+ 0000038B			check_ax1:
+ 0000038B  80 3D 000001D5 R	cmp check_ax,1
+	   01
+ 00000392  75 68		jnz ex
+ 00000394  C6 05 0000022B R	mov hex_value_opcode,0A1h
+	   A1
+ 0000039B  EB 5F		jmp ex
+
+ 0000039D			next_check:
+ 0000039D  80 FA 01		cmp dl,1
+ 000003A0  75 24		jnz next_check1
+ 000003A2  80 3D 000001D4 R	cmp check_al,1
+	   01
+ 000003A9  75 09		jnz check_ax2
+ 000003AB  C6 05 0000022B R	mov hex_value_opcode,4h
+	   04
+ 000003B2  EB 48		jmp ex
+ 000003B4			check_ax2:
+ 000003B4  80 3D 000001D5 R	cmp check_ax,1
+	   01
+ 000003BB  75 3F		jnz ex
+ 000003BD  C6 05 0000022B R	mov hex_value_opcode,5h
+	   05
+ 000003C4  EB 36		jmp ex
+ 000003C6			next_check1:
+ 000003C6  80 FA 02		cmp dl,2
+ 000003C9  75 31		jnz ex
+ 000003CB  75 F9		jnz next_check1
+ 000003CD  80 3D 000001D4 R	cmp check_al,1
+	   01
+ 000003D4  75 09		jnz check_ax3
+ 000003D6  C6 05 0000022B R	mov hex_value_opcode,02Ch
+	   2C
+ 000003DD  EB 1D		jmp ex
+ 000003DF			check_ax3:
+ 000003DF  80 3D 000001D5 R	cmp check_ax,1
+	   01
+ 000003E6  0F 85 FFFFFF54	jnz check_dest
+ 000003EC  C6 05 0000022B R	mov hex_value_opcode,02Dh
+	   2D
+ 000003F3  EB 07		jmp ex
+
+ 000003F5  C6 05 0000022B R	mov hex_value_opcode,0
+	   00
+
+ 000003FC			ex:
+ 000003FC  5D			pop ebp
+ 000003FD  C3			ret 
+ 000003FE			cal_opcode_if_accumlator endp
+
+ 000003FE			cal_machine_code_if_mem_reg_immidiate proc
+ 000003FE  55			push ebp
+ 000003FF  8B EC		mov ebp,esp
+
+ 00000401  66| A1		mov ax,word ptr immidiate
+	   0000015F R
+ 00000407  66| 8B 1D		mov bx,word ptr immidiate+2
+	   00000161 R
+ 0000040E  E8 00000D7F		call cal_nemonic_number
+ 00000413  8A 15 00000210 R	mov dl,nemonic_number
+
+ 00000419  80 FC 00		cmp ah,0 ;means 8bit immediate value
+ 0000041C  75 33		jnz condition_16_32
+ 0000041E  80 FA 00		cmp dl,0
+ 00000421  75 12		jnz check_next
+ 00000423  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 0000042A  75 62		jnz ex
+ 0000042C  C6 05 0000022B R	mov hex_value_opcode,0C6h
+	   C6
+ 00000433  EB 4F		jmp opcode_calculated
+ 00000435			check_next:
+ 00000435  80 FA 01		cmp dl,1
+ 00000438  75 09		jnz check_next1
+ 0000043A  C6 05 0000022B R	mov hex_value_opcode,80h
+	   80
+ 00000441  EB 41		jmp opcode_calculated
+
+ 00000443			check_next1:
+ 00000443  80 FA 02		cmp dl,2
+ 00000446  75 46		jnz ex
+ 00000448  C6 05 0000022B R	mov hex_value_opcode,80h
+	   80
+ 0000044F  EB 33		jmp opcode_calculated
+
+ 00000451			condition_16_32:
+				;; for 16/32 bit condition
+ 00000451  80 FA 00		cmp dl,0
+ 00000454  75 12		jnz check_next2
+ 00000456  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 0000045D  75 2F		jnz ex
+ 0000045F  C6 05 0000022B R	mov hex_value_opcode,0C7h
+	   C7
+ 00000466  EB 1C		jmp opcode_calculated
+
+ 00000468			check_next2:
+ 00000468  80 FA 01		cmp dl,1
+ 0000046B  75 09		jnz check_next3
+ 0000046D  C6 05 0000022B R	mov hex_value_opcode,81h
+	   81
+ 00000474  EB 0E		jmp opcode_calculated
+
+ 00000476			check_next3:
+ 00000476  80 FA 02		cmp dl,2
+ 00000479  75 13		jnz ex
+ 0000047B  C6 05 0000022B R	mov hex_value_opcode,81h
+	   81
+ 00000482  EB 00		jmp opcode_calculated
+
+ 00000484			opcode_calculated:
+ 00000484  68 000000D7 R	push offset s_operand
+ 00000489  E8 00000954		call cal_RMbyte
+ 0000048E			ex:
+ 0000048E  5D			pop ebp
+ 0000048F  C3			ret
+ 00000490			cal_machine_code_if_mem_reg_immidiate endp
+
+ 00000490			check_operand_al proc
+ 00000490  55			push ebp 
+ 00000491  8B EC		mov ebp,esp
+ 00000493  8B 75 08		mov esi,[ebp+8]
+ 00000496  B0 61		mov al,'a'
+ 00000498  B9 00000002		mov ecx,2
+ 0000049D			l1:
+ 0000049D  38 06		cmp [esi],al
+ 0000049F  75 13		jnz out_loop  
+ 000004A1  83 F9 01		cmp ecx,1
+ 000004A4  75 09		jnz next_condition
+ 000004A6  C6 05 000001D4 R	mov check_al,1
+	   01
+ 000004AD  EB 0C		jmp ex
+ 000004AF			next_condition:
+ 000004AF  46			inc esi
+ 000004B0  B0 6C		mov al,'l'
+ 000004B2  E2 E9		loop l1
+ 000004B4			out_loop:
+ 000004B4  C6 05 000001D4 R	mov check_al,0
+	   00
+ 000004BB			ex:
+ 000004BB  5D			pop ebp
+ 000004BC  C2 0004		ret 4
+ 000004BF			check_operand_al endp
+
+ 000004BF			check_operand_ax proc
+ 000004BF  55			push ebp 
+ 000004C0  8B EC		mov ebp,esp
+ 000004C2  8B 75 08		mov esi,[ebp+8]
+ 000004C5  B0 61		mov al,'a'
+ 000004C7  B9 00000002		mov ecx,2
+ 000004CC			l1:
+ 000004CC  38 06		cmp [esi],al
+ 000004CE  75 13		jnz out_loop  
+ 000004D0  83 F9 01		cmp ecx,1
+ 000004D3  75 09		jnz next_condition
+ 000004D5  C6 05 000001D5 R	mov check_ax,1
+	   01
+ 000004DC  EB 0C		jmp ex
+ 000004DE			next_condition:
+ 000004DE  46			inc esi
+ 000004DF  B0 78		mov al,'x'
+ 000004E1  E2 E9		loop l1
+ 000004E3			out_loop:
+ 000004E3  C6 05 000001D5 R	mov check_ax,0
+	   00
+ 000004EA			ex:
+ 000004EA  5D			pop ebp
+ 000004EB  C2 0004		ret 4
+ 000004EE			check_operand_ax endp
+
+
+ 000004EE			cal_opcode proc USES esi edi ebx
+ 000004F1  55			push ebp
+ 000004F2  8B EC		mov ebp,esp
+ 000004F4  E8 00000C99		call cal_nemonic_number   ; because we have to check the number of nemonic 
+ 000004F9  C6 05 00000211 R	mov d_bit,0 ;initially zero
+	   00
+ 00000500  C6 05 00000212 R	mov w_bit,0 ;initially zero
+	   00
+				;;;;;;;;;;;;;;;;;;;;;;;; checking source register ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 00000507  E8 000000BD		call check_source_operand
+				;;;;;;;;;;;;;;;;;;;;;;;; checking destination register ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 0000050C  E8 0000026C		call check_destination_operand
+ 00000511  B0 00		mov al,0
+
+ 00000513  38 05 00000210 R	cmp nemonic_number,al
+ 00000519  75 28		jnz check_next
+ 0000051B  BE 0000022C R	mov esi,offset mov_opcode
+ 00000520  83 C6 06		add esi,6
+
+				;store d_bit 
+ 00000523  8A 1D 00000211 R	mov bl,d_bit
+ 00000529  88 1E		mov [esi],bl
+
+ 0000052B  46			inc esi
+
+				;store w_bit 
+ 0000052C  8A 1D 00000212 R	mov bl,w_bit
+ 00000532  88 1E		mov [esi],bl
+
+ 00000534  68 0000022C R	push offset mov_opcode
+ 00000539  E8 000006B5		call convert_8emlemnts_array_into8bithexvalue
+ 0000053E  E9 00000081		jmp opcode_found
+
+ 00000543			check_next:
+ 00000543  FE C0		inc al
+
+ 00000545  38 05 00000210 R	cmp nemonic_number,al
+ 0000054B  75 25		jnz check_next1
+ 0000054D  BE 00000234 R	mov esi,offset add_opcode
+ 00000552  83 C6 06		add esi,6
+
+				;store d_bit 
+ 00000555  8A 1D 00000211 R	mov bl,d_bit
+ 0000055B  88 1E		mov [esi],bl
+				 
+				 
+ 0000055D  46			inc esi
+
+				;store w_bit 
+ 0000055E  8A 1D 00000212 R	mov bl,w_bit
+ 00000564  88 1E		mov [esi],bl
+
+ 00000566  68 00000234 R	push offset add_opcode
+ 0000056B  E8 00000683		call convert_8emlemnts_array_into8bithexvalue
+ 00000570  EB 52		jmp opcode_found
+
+
+ 00000572			check_next1:
+ 00000572  FE C0		inc al
+
+ 00000574  38 05 00000210 R	cmp nemonic_number,al
+ 0000057A  75 25		jnz check_next2
+ 0000057C  BE 0000023C R	mov esi,offset sub_opcode
+ 00000581  83 C6 06		add esi,6
+
+
+				;store d_bit 
+ 00000584  8A 1D 00000211 R	mov bl,d_bit
+ 0000058A  88 1E		mov [esi],bl
+
+
+ 0000058C  46			inc esi
+				 
+				;store w_bit 
+ 0000058D  8A 1D 00000212 R	mov bl,w_bit
+ 00000593  88 1E		mov [esi],bl
+
+ 00000595  68 0000023C R	push offset sub_opcode
+ 0000059A  E8 00000654		call convert_8emlemnts_array_into8bithexvalue
+ 0000059F  EB 23		jmp opcode_found
+
+ 000005A1			check_next2:
+
+				; for xchg condition
+ 000005A1  BE 00000244 R	mov esi,offset xchg_opcode
+ 000005A6  83 C6 06		add esi,6
+
+				;store d_bit 
+ 000005A9  8A 1D 00000211 R	mov bl,d_bit
+ 000005AF  88 1E		mov [esi],bl
+				 
+ 000005B1  46			inc esi
+
+
+				;store w_bit 
+ 000005B2  8A 1D 00000212 R	mov bl,w_bit
+ 000005B8  88 1E		mov [esi],bl
+
+ 000005BA  68 00000244 R	push offset xchg_opcode
+ 000005BF  E8 0000062F		call convert_8emlemnts_array_into8bithexvalue
+
+ 000005C4			opcode_found:
+ 000005C4  5D			pop ebp
+				ret
+ 000005C9			cal_opcode endp
+
+ 000005C9			check_source_operand proc
+ 000005C9  55			push ebp
+ 000005CA  8B EC		mov ebp,esp
+				;;;;; checking for the register;;;;;;;;;;;;;;;;
+ 000005CC  BF 000000D7 R	mov edi,offset s_operand
+ 000005D1  8A 07		mov al,[edi]
+ 000005D3  BB 00000164 R	mov ebx,offset register32 
+
+				;checking 32bit resgister
+ 000005D8  B9 00000008		mov ecx,8
+ 000005DD  3A 03		cmp al,[ebx]
+ 000005DF  75 40		jnz out_loop32
+ 000005E1			l32:
+ 000005E1  8B D1		mov edx,ecx 
+ 000005E3  8B 0D 00000109 R	mov ecx,s_length
+ 000005E9  49			dec ecx
+ 000005EA			l2:
+ 000005EA  83 C3 01		add ebx,type register32
+ 000005ED  83 C7 01		add edi,type s_operand
+ 000005F0  8A 07		mov al,[edi]
+ 000005F2  3A 03		cmp al,[ebx]
+ 000005F4  75 21		jnz outerloop32
+ 000005F6  83 F9 01		cmp ecx,1
+ 000005F9  75 1A		jnz inner
+ 000005FB  C6 05 00000211 R	mov d_bit,0  ;clear D bit if source is 32 bit register
+	   00
+ 00000602  C6 05 00000212 R	mov w_bit,1  ;set W bit if source is 32bit/16bit register
+	   01
+ 00000609  C6 05 00000214 R	mov s_operand_check,1
+	   01
+ 00000610  E9 00000166		jmp source_operand_checked 
+ 00000615			inner:
+ 00000615  E2 D3		loop l2
+ 00000617			outerloop32:
+ 00000617  83 EF 01		sub edi,type s_operand
+ 0000061A  83 C3 03		add ebx,3
+ 0000061D  8B CA		mov ecx,edx
+ 0000061F  E2 C0		loop l32
+ 00000621			out_loop32:
+
+				;checking 16bit resgister
+ 00000621  BF 000000D7 R	mov edi,offset s_operand
+ 00000626  8A 07		mov al,[edi]
+ 00000628  BB 00000184 R	mov ebx,offset register16
+ 0000062D  B9 00000008		mov ecx,8
+ 00000632			l16:
+ 00000632  3A 03		cmp al,[ebx]
+ 00000634  75 35		jnz direct_check16
+ 00000636  83 C3 01		add ebx,type register16
+ 00000639  83 C7 01		add edi,type s_operand
+ 0000063C  8A 07		mov al,[edi]
+ 0000063E  3A 03		cmp al,[ebx]
+ 00000640  75 21		jnz outerloop16
+ 00000642  C6 05 00000211 R	mov d_bit,0 ;clear D bit if source is 16 bit register
+	   00
+ 00000649  C6 05 00000212 R	mov w_bit,1  ;set W bit if source is 32bit/16bit register
+	   01
+ 00000650  C6 05 00000214 R	mov s_operand_check,1
+	   01
+ 00000657  C6 05 000001D6 R	mov check_16bit,1
+	   01
+ 0000065E  E9 00000118		jmp source_operand_checked 
+ 00000663			outerloop16:
+ 00000663  83 EF 01		sub edi,type s_operand
+ 00000666  83 C3 02		add ebx,2
+ 00000669  EB 03		jmp direct_loop16
+
+ 0000066B			direct_check16:
+ 0000066B  83 C3 03		add ebx,3
+
+ 0000066E			direct_loop16:
+ 0000066E  E2 C2		loop l16
+
+				;checking higher 8 bit register
+ 00000670  BF 000000D7 R	mov edi,offset s_operand
+ 00000675  8A 07		mov al,[edi]
+ 00000677  BB 000001A8 R	mov ebx,offset register_higher_8
+ 0000067C  B9 00000004		mov ecx,4
+ 00000681			l_higher8:
+ 00000681  3A 03		cmp al,[ebx]
+ 00000683  75 2E		jnz direct_check_higher8
+ 00000685  83 C3 01		add ebx,type register_higher_8
+ 00000688  83 C7 01		add edi,type s_operand
+ 0000068B  8A 07		mov al,[edi]
+ 0000068D  3A 03		cmp al,[ebx]
+ 0000068F  75 1A		jnz outerloop_higher8
+ 00000691  C6 05 00000211 R	mov d_bit,0 ;clear D bit if source is higher 8bit register
+	   00
+ 00000698  C6 05 00000212 R	mov w_bit,0  ;clear W bit if source is 8bit register
+	   00
+ 0000069F  C6 05 00000214 R	mov s_operand_check,1
+	   01
+ 000006A6  E9 000000D0		jmp source_operand_checked 
+ 000006AB			outerloop_higher8:
+ 000006AB  83 EF 01		sub edi,type s_operand
+ 000006AE  83 C3 02		add ebx,2
+ 000006B1  EB 03		jmp direct_loop_higher8
+
+ 000006B3			direct_check_higher8:
+ 000006B3  83 C3 03		add ebx,3
+
+ 000006B6			direct_loop_higher8:
+ 000006B6  E2 C9		loop l_higher8
+
+				;checking lower 8 bit register
+ 000006B8  BF 000000D7 R	mov edi,offset s_operand
+ 000006BD  8A 07		mov al,[edi]
+ 000006BF  BB 0000019C R	mov ebx,offset register_lower_8
+ 000006C4  B9 00000004		mov ecx,4
+ 000006C9			l_lower8:
+ 000006C9  3A 03		cmp al,[ebx]
+ 000006CB  75 2E		jnz direct_check_lower8
+ 000006CD  83 C3 01		add ebx,type register_lower_8
+ 000006D0  83 C7 01		add edi,type s_operand
+ 000006D3  8A 07		mov al,[edi]
+ 000006D5  3A 03		cmp al,[ebx]
+ 000006D7  75 1A		jnz outerloop_lower8
+ 000006D9  C6 05 00000211 R	mov d_bit,0 ;clear D bit if source is lower 8bit register
+	   00
+ 000006E0  C6 05 00000212 R	mov w_bit,0  ;clear W bit if source is 8bit register
+	   00
+ 000006E7  C6 05 00000214 R	mov s_operand_check,1
+	   01
+ 000006EE  E9 00000088		jmp source_operand_checked 
+ 000006F3			outerloop_lower8:
+ 000006F3  83 EF 01		sub edi,type s_operand
+ 000006F6  83 C3 02		add ebx,2
+ 000006F9  EB 03		jmp direct_loop_lower8
+
+ 000006FB			direct_check_lower8:
+ 000006FB  83 C3 03		add ebx,3
+
+ 000006FE			direct_loop_lower8:
+ 000006FE  E2 C9		loop l_lower8
+
+ 00000700  C6 05 00000211 R	mov d_bit,1 ;if source operand is not a register 
+	   01
+
+ 00000707  BF 000000D7 R	mov edi,offset s_operand
+ 0000070C  BB 00000143 R	mov ebx, offset data_sizes
+ 00000711  8A 07		mov al,[edi]
+ 00000713  B9 00000003		mov ecx,3
+ 00000718			l1:
+ 00000718  3A 03		cmp al,[ebx]
+ 0000071A  74 0D		jz next1
+ 0000071C  83 C3 05		add ebx,5
+ 0000071F  FE 05 00000152 R	inc data_size_count
+ 00000725  E2 F1		loop l1
+ 00000727  EB 13		jmp next2
+
+ 00000729			next1:
+ 00000729  C6 05 00000214 R	mov s_operand_check,0
+	   00
+ 00000730  68 000000D7 R	push offset s_operand
+ 00000735  E8 000001FE		call store_displacement_value
+ 0000073A  EB 3F		jmp source_operand_checked
+
+ 0000073C			next2:
+ 0000073C  BF 000000D7 R	mov edi,offset s_operand
+ 00000741  B0 5B		mov al,'['
+ 00000743  38 07		cmp [edi],al
+ 00000745  75 02		jnz next3 
+ 00000747  EB E0		jmp next1
+
+ 00000749			next3:
+ 00000749  BF 000000D7 R	mov edi,offset s_operand
+ 0000074E  B0 00		mov al,0
+ 00000750  B9 0000000A		mov ecx,10
+ 00000755			check_immidiate1:
+ 00000755  38 07		cmp[edi],al
+ 00000757  74 02		jz jump1   ;1st character of s_operand array lie in between (0-9) then it is obvious that s_operand is immidiate value
+ 00000759  EB 0E		jmp direct_jump
+ 0000075B			jump1:
+ 0000075B  C6 05 00000214 R	mov s_operand_check,00
+	   00
+ 00000762  E8 00000180		call store_immidiate_value
+ 00000767  EB 12		jmp source_operand_checked
+
+ 00000769			direct_jump:
+ 00000769  FE C0		inc al
+ 0000076B  E2 E8		loop check_immidiate1
+
+				;; checking normal variable
+ 0000076D  C6 05 00000214 R	mov s_operand_check,0
+	   00
+ 00000774  C6 05 0000022A R	mov memory_format,0  ; is zero when there is direct adressing is used
+	   00
+
+ 0000077B			source_operand_checked:
+ 0000077B  5D			pop ebp
+ 0000077C  C3			ret
+ 0000077D			check_source_operand endp
+
+ 0000077D			check_destination_operand proc
+ 0000077D  55			push ebp
+ 0000077E  8B EC		mov ebp,esp
+
+				;;;;;;;;;;;;;; checking for the register;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 00000780  BE 0000010D R	mov esi,offset d_operand
+ 00000785  8A 06		mov al,[esi]
+ 00000787  BB 00000164 R	mov ebx,offset register32 
+
+				;checking 32bit resgister
+ 0000078C  B9 00000008		mov ecx,8
+ 00000791  3A 03		cmp al,[ebx]
+ 00000793  75 39		jnz d_out_loop32
+ 00000795			d_l32:
+ 00000795  8B D1		mov edx,ecx 
+ 00000797  8B 0D 0000013F R	mov ecx,d_length
+ 0000079D  49			dec ecx
+ 0000079E			d_l2:
+ 0000079E  83 C3 01		add ebx,type register32
+ 000007A1  83 C6 01		add esi,type d_operand
+ 000007A4  8A 06		mov al,[esi]
+ 000007A6  3A 03		cmp al,[ebx]
+ 000007A8  75 1A		jnz d_outerloop32
+ 000007AA  83 F9 01		cmp ecx,1
+ 000007AD  75 13		jnz d_inner
+ 000007AF  C6 05 00000212 R	mov w_bit,1  ;set W bit if source is 32bit/16bit register
+	   01
+ 000007B6  C6 05 00000213 R	mov d_operand_check,1 ; sets if destination operand is register
+	   01
+ 000007BD  E9 00000123		jmp ex 
+ 000007C2			d_inner:
+ 000007C2  E2 DA		loop d_l2
+ 000007C4			d_outerloop32:
+ 000007C4  83 EE 01		sub esi,type d_operand
+ 000007C7  83 C3 03		add ebx,3
+ 000007CA  8B CA		mov ecx,edx
+ 000007CC  E2 C7		loop d_l32
+ 000007CE			d_out_loop32:
+
+				;checking 16bit resgister
+ 000007CE  BE 0000010D R	mov esi,offset d_operand
+ 000007D3  8A 06		mov al,[esi]
+ 000007D5  BB 00000184 R	mov ebx,offset register16
+ 000007DA  B9 00000008		mov ecx,8
+ 000007DF			d_l16:
+ 000007DF  3A 03		cmp al,[ebx]
+ 000007E1  75 2E		jnz d_direct_check16
+ 000007E3  83 C3 01		add ebx,type register16
+ 000007E6  83 C6 01		add esi,type d_operand
+ 000007E9  8A 06		mov al,[esi]
+ 000007EB  3A 03		cmp al,[ebx]
+ 000007ED  75 1A		jnz d_outerloop16
+ 000007EF  C6 05 00000212 R	mov w_bit,1  ;set W bit if source is 32bit/16bit register
+	   01
+ 000007F6  C6 05 00000213 R	mov d_operand_check,1 ; sets if destination operand is register
+	   01
+ 000007FD  C6 05 000001D6 R	mov check_16bit,1
+	   01
+ 00000804  E9 000000DC		jmp ex 
+ 00000809			d_outerloop16:
+ 00000809  83 EE 01		sub esi,type d_operand
+ 0000080C  83 C3 02		add ebx,2
+ 0000080F  EB 03		jmp d_direct_loop16
+
+ 00000811			d_direct_check16:
+ 00000811  83 C3 03		add ebx,3
+
+ 00000814			d_direct_loop16:
+ 00000814  E2 C9		loop d_l16
+
+				;checking higher 8 bit register
+ 00000816  BE 0000010D R	mov esi,offset d_operand
+ 0000081B  8A 06		mov al,[esi]
+ 0000081D  BB 000001A8 R	mov ebx,offset register_higher_8
+ 00000822  B9 00000004		mov ecx,4
+ 00000827			d_l_higher8:
+ 00000827  3A 03		cmp al,[ebx]
+ 00000829  75 27		jnz d_direct_check_higher8
+ 0000082B  83 C3 01		add ebx,type register_higher_8
+ 0000082E  83 C6 01		add esi,type d_operand
+ 00000831  8A 06		mov al,[esi]
+ 00000833  3A 03		cmp al,[ebx]
+ 00000835  75 13		jnz d_outerloop_higher8
+ 00000837  C6 05 00000212 R	mov w_bit,0  ;clear W bit if source is 8bit register
+	   00
+ 0000083E  C6 05 00000213 R	mov d_operand_check,1 ; sets if destination operand is register
+	   01
+ 00000845  E9 0000009B		jmp ex 
+ 0000084A			d_outerloop_higher8:
+ 0000084A  83 EE 01		sub esi,type d_operand
+ 0000084D  83 C3 02		add ebx,2
+ 00000850  EB 03		jmp d_direct_loop_higher8
+
+ 00000852			d_direct_check_higher8:
+ 00000852  83 C3 03		add ebx,3
+
+ 00000855			d_direct_loop_higher8:
+ 00000855  E2 D0		loop d_l_higher8
+
+				;checking lower 8 bit register
+ 00000857  BE 0000010D R	mov esi,offset d_operand
+ 0000085C  8A 06		mov al,[esi]
+ 0000085E  BB 0000019C R	mov ebx,offset register_lower_8
+ 00000863  B9 00000004		mov ecx,4
+ 00000868			d_l_lower8:
+ 00000868  3A 03		cmp al,[ebx]
+ 0000086A  75 24		jnz d_direct_check_lower8
+ 0000086C  83 C3 01		add ebx,type register_lower_8
+ 0000086F  83 C6 01		add esi,type d_operand
+ 00000872  8A 06		mov al,[esi]
+ 00000874  3A 03		cmp al,[ebx]
+ 00000876  75 10		jnz d_outerloop_lower8
+ 00000878  C6 05 00000212 R	mov w_bit,0  ;clear W bit if source is 8bit register
+	   00
+ 0000087F  C6 05 00000213 R	mov d_operand_check,1 ; sets if destination operand is register
+	   01
+ 00000886  EB 5D		jmp ex 
+ 00000888			d_outerloop_lower8:
+ 00000888  83 EE 01		sub esi,type d_operand
+ 0000088B  83 C3 02		add ebx,2
+ 0000088E  EB 03		jmp d_direct_loop_lower8
+
+ 00000890			d_direct_check_lower8:
+ 00000890  83 C3 03		add ebx,3
+
+ 00000893			d_direct_loop_lower8:
+ 00000893  E2 D3		loop d_l_lower8
+
+
+				;;; checking if destination operand is memory operand
+
+				;; byte/word/dword ptr[esi+11] checking this type of format
+ 00000895  BF 0000010D R	mov edi,offset d_operand
+ 0000089A  BB 00000143 R	mov ebx, offset data_sizes
+ 0000089F  8A 07		mov al,[edi]
+ 000008A1  B9 00000003		mov ecx,3
+ 000008A6			l1:
+ 000008A6  3A 03		cmp al,[ebx]
+ 000008A8  74 0D		jz next1
+ 000008AA  83 C3 05		add ebx,5
+ 000008AD  FE 05 00000152 R	inc data_size_count
+ 000008B3  E2 F1		loop l1
+ 000008B5  EB 13		jmp next2
+
+ 000008B7			next1:
+ 000008B7  C6 05 00000213 R	mov d_operand_check,0
+	   00
+ 000008BE  68 0000010D R	push offset d_operand
+ 000008C3  E8 00000070		call store_displacement_value
+ 000008C8  EB 1B		jmp ex
+
+				;;;;[esi+11] checking this type of format
+
+ 000008CA			next2:
+ 000008CA  BF 0000010D R	mov edi,offset d_operand
+ 000008CF  B0 5B		mov al,'['
+ 000008D1  38 07		cmp [edi],al
+ 000008D3  75 02		jnz next3 
+ 000008D5  EB E0		jmp next1
+
+				;; checking normal variable
+ 000008D7			next3:
+ 000008D7  C6 05 00000213 R	mov d_operand_check,0
+	   00
+ 000008DE  C6 05 0000022A R	mov memory_format,0  ; is zero when there is direct adressing is used
+	   00
+
+ 000008E5			ex:
+ 000008E5  5D			pop ebp
+ 000008E6  C3			ret 
+ 000008E7			check_destination_operand endp
+
+
+ 000008E7			store_immidiate_value proc
+ 000008E7  55			push ebp
+ 000008E8  8B EC		mov ebp,esp
+ 000008EA  C7 05 0000015F R	mov immidiate,0
+	   00000000
+ 000008F4  C6 05 00000163 R	mov check_immidiate,0 ;initially zero
+	   00
+ 000008FB  E8 FFFFFCC9		call check_source_operand
+ 00000900  80 3D 00000214 R	cmp s_operand_check,00
+	   00
+ 00000907  75 2D		jnz ex
+ 00000909  F8			clc
+ 0000090A  BF 000000D7 R	mov edi,offset s_operand
+ 0000090F  8B 0D 00000109 R	mov ecx,s_length
+ 00000915			l1:
+ 00000915  8B D1		mov edx,ecx
+ 00000917  8A 07		mov al,[edi]
+ 00000919  B9 00000004		mov ecx,4
+ 0000091E			loop_inner:
+ 0000091E  D0 D8		rcr al,1
+ 00000920  D1 1D 0000015F R	rcr immidiate,1
+ 00000926  E2 F6		loop loop_inner
+ 00000928  83 C7 01		add edi,1
+ 0000092B  8B CA		mov ecx,edx
+ 0000092D  E2 E6		loop l1
+ 0000092F  C6 05 00000163 R	mov check_immidiate,1
+	   01
+ 00000936			ex:
+ 00000936  5D			pop ebp
+ 00000937  C3			ret 
+ 00000938			store_immidiate_value endp
+
+
+ 00000938			store_displacement_value proc
+ 00000938  55			push ebp
+ 00000939  8B EC		mov ebp,esp
+ 0000093B  8B 7D 08		mov edi,[ebp+8]
+ 0000093E  BB 00000143 R	mov ebx, offset data_sizes
+ 00000943  8A 07		mov al,[edi]
+ 00000945  C7 05 00000153 R	mov displacement_value,0 ;initially zero
+	   00000000
+ 0000094F  B9 00000003		mov ecx,3
+ 00000954			l1:
+ 00000954  3A 03		cmp al,[ebx]
+ 00000956  74 0B		jz operand_checked
+ 00000958  83 C3 05		add ebx,5
+ 0000095B  FE 05 00000152 R	inc data_size_count
+ 00000961  E2 F1		loop l1
+
+ 00000963			operand_checked:
+ 00000963  8B 7D 08		mov edi,[ebp+8]
+ 00000966  B0 2B		mov al,'+'
+ 00000968  B2 65		mov dl,'e'
+ 0000096A  B3 5D		mov bl,']'
+ 0000096C			l2:
+ 0000096C  38 07		cmp [edi],al
+ 0000096E  74 09		jz check_offset_register
+ 00000970  38 1F		cmp [edi],bl
+ 00000972  74 63		jz check_howmany_bitsof_displacement
+
+ 00000974  83 C7 01		add edi,1
+ 00000977  EB 12		jmp direct_loopl2
+ 00000979			check_offset_register:
+ 00000979  38 17		cmp [edi],dl  ;checking for [ebx+esi+123] this type of format
+ 0000097B  74 10		jz check_32
+ 0000097D  B2 73		mov dl,'s'
+ 0000097F  38 17		cmp [edi],dl
+ 00000981  74 1C		jz check_16
+ 00000983  B2 64		mov dl,'d'
+ 00000985  38 17		cmp [edi],dl
+ 00000987  74 16		jz check_16
+ 00000989  EB 24		jmp memory_with_displacement
+ 0000098B			direct_loopl2:
+ 0000098B  EB DF		jmp l2
+
+ 0000098D			check_32:
+ 0000098D  83 C7 03		add edi,3
+ 00000990  B0 2B		mov al,'+'
+ 00000992  38 07		cmp [edi],al
+ 00000994  75 4A		jnz direct_addr
+ 00000996  C6 05 0000022A R	mov memory_format,1
+	   01
+ 0000099D  EB 17		jmp outerloop
+ 0000099F			check_16:
+ 0000099F  83 C7 02		add edi,2
+ 000009A2  38 07		cmp [edi],al
+ 000009A4  75 3A		jnz direct_addr
+ 000009A6  C6 05 0000022A R	mov memory_format,1
+	   01
+ 000009AD  EB 07		jmp outerloop
+
+ 000009AF			memory_with_displacement:
+ 000009AF  C6 05 0000022A R	mov memory_format,1 
+	   01
+
+ 000009B6			outerloop:
+ 000009B6  47			inc edi  ;now edi points to starting point to the displacement value if exists
+ 000009B7  BE 00000153 R	mov esi,offset displacement_value
+ 000009BC  F8			clc 
+ 000009BD			l3:
+ 000009BD  38 1F		cmp [edi],bl
+ 000009BF  74 16		jz check_howmany_bitsof_displacement
+ 000009C1  8A 07		mov al,[edi]
+ 000009C3  B9 00000004		mov ecx,4
+ 000009C8			loop_inner:
+ 000009C8  D0 D8		rcr al,1
+
+ 000009CA  D1 1D 00000153 R	rcr displacement_value,1
+ 000009D0  E2 F6		loop loop_inner
+ 000009D2  83 C7 01		add edi,1
+ 000009D5  EB E6		jmp l3
+
+ 000009D7			check_howmany_bitsof_displacement:
+
+ 000009D7  83 3D 00000153 R	cmp displacement_value,0
+	   00
+ 000009DE  75 10		jnz next1
+ 000009E0			direct_addr: ;if there is no displacement means direct addressig
+ 000009E0  C6 05 0000022A R	mov memory_format,1 ;; if there is no displacement then there is direct addressing
+	   01
+ 000009E7  C6 05 00000216 R	mov check_displacement,00
+	   00
+ 000009EE  EB 29		jmp ex
+ 000009F0			next1:
+ 000009F0  A1 00000153 R	mov eax,displacement_value
+ 000009F5  66| 83 F8 00		cmp ax,0
+ 000009F9  75 17		jnz next2
+ 000009FB  80 FC 00		cmp ah,0
+ 000009FE  75 09		jnz eight_bit
+ 00000A00  C6 05 00000216 R	mov check_displacement,1 ; displacement is 16 bit
+	   01
+ 00000A07  EB 10		jmp ex
+ 00000A09			eight_bit:
+ 00000A09  C6 05 00000216 R	mov check_displacement,0 ; displacement is 8 bit 
+	   00
+ 00000A10  EB 07		jmp ex
+ 00000A12			next2:
+ 00000A12  C6 05 00000216 R	mov check_displacement,1 ; displacement is 32 bit
+	   01
+ 00000A19			ex:
+ 00000A19  5D			pop ebp
+ 00000A1A  C2 0004		ret 4
+ 00000A1D			store_displacement_value endp
+
+
+
+ 00000A1D			cal_one_operand_memory_register proc
+ 00000A1D  55			push ebp
+ 00000A1E  8B EC		mov ebp,esp
+ 00000A20  8B 75 08		mov esi,[ebp+8]
+
+ 00000A23  E8 0000076A		call cal_nemonic_number
+
+ 00000A28  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 00000A2F  75 36		jnz check_operand
+ 00000A31  B0 76		mov al,'v'      ;because we give variable name in this format var8/var16/var32
+ 00000A33  3A 06		cmp al,[esi] 
+ 00000A35  75 1B		jnz check_operand_continue
+ 00000A37  83 C6 03		add esi,3
+ 00000A3A  B0 08		mov al,8
+ 00000A3C  38 06		cmp [esi],al
+ 00000A3E  75 09		jnz bit16_32
+ 00000A40  C6 05 00000212 R	mov w_bit,0
+	   00
+ 00000A47  EB 1E		jmp check_operand
+ 00000A49			bit16_32:
+ 00000A49  C6 05 00000212 R	mov w_bit,1
+	   01
+ 00000A50  EB 15		jmp check_operand
+
+ 00000A52			check_operand_continue:
+ 00000A52  8B 75 08		mov esi,[ebp+8]
+ 00000A55  B0 5B		mov al,'['
+ 00000A57			l1:
+ 00000A57  38 06		cmp [esi],al
+ 00000A59  75 09		jnz jump_continue
+ 00000A5B  C6 05 00000212 R	mov w_bit,1
+	   01
+ 00000A62  EB 03		jmp check_operand
+
+ 00000A64			jump_continue:
+ 00000A64  46			inc esi
+ 00000A65  EB F0		jmp l1
+
+
+ 00000A67			check_operand:
+ 00000A67  80 3D 00000210 R	cmp nemonic_number,3
+	   03
+ 00000A6E  75 21		jnz check_next_nemonic
+ 00000A70  80 3D 00000212 R	cmp w_bit,0
+	   00
+ 00000A77  75 0C		jnz next_register
+ 00000A79  C6 05 0000022B R	mov hex_value_opcode,0F6h
+	   F6
+ 00000A80  E9 00000091		jmp opcode_find
+ 00000A85			next_register:
+ 00000A85  C6 05 0000022B R	mov hex_value_opcode,0F7h
+	   F7
+ 00000A8C  E9 00000085		jmp opcode_find
+
+ 00000A91			check_next_nemonic:
+ 00000A91  80 3D 00000210 R	cmp nemonic_number,4
+	   04
+ 00000A98  75 1B		jnz check_next_nemonic1
+ 00000A9A  80 3D 00000212 R	cmp w_bit,0
+	   00
+ 00000AA1  75 09		jnz next_register1
+ 00000AA3  C6 05 0000022B R	mov hex_value_opcode,0F6h
+	   F6
+ 00000AAA  EB 6A		jmp opcode_find
+ 00000AAC			next_register1:
+ 00000AAC  C6 05 0000022B R	mov hex_value_opcode,0F7h
+	   F7
+ 00000AB3  EB 61		jmp opcode_find 
+
+ 00000AB5			check_next_nemonic1:
+ 00000AB5  80 3D 00000210 R	cmp nemonic_number,5
+	   05
+ 00000ABC  75 2D		jnz check_next_nemonic2
+ 00000ABE  80 3D 00000212 R	cmp w_bit,0
+	   00
+ 00000AC5  75 09		jnz next_register2
+ 00000AC7  C6 05 0000022B R	mov hex_value_opcode,0FEh
+	   FE
+ 00000ACE  EB 46		jmp opcode_find
+ 00000AD0			next_register2:
+ 00000AD0  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 00000AD7  75 09		jnz register_opcode_value_nemonic
+ 00000AD9  C6 05 0000022B R	mov hex_value_opcode,0FFh
+	   FF
+ 00000AE0  EB 34		jmp opcode_find 
+ 00000AE2			register_opcode_value_nemonic:
+ 00000AE2  C6 05 0000022B R	mov hex_value_opcode,40h
+	   40
+ 00000AE9  EB 2B		jmp opcode_find 
+
+ 00000AEB			check_next_nemonic2:
+ 00000AEB  80 3D 00000212 R	cmp w_bit,0
+	   00
+ 00000AF2  75 09		jnz next_register3
+ 00000AF4  C6 05 0000022B R	mov hex_value_opcode,0FEh
+	   FE
+ 00000AFB  EB 19		jmp opcode_find
+ 00000AFD			next_register3:
+ 00000AFD  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 00000B04  75 09		jnz register_opcode_value_nemonic1
+ 00000B06  C6 05 0000022B R	mov hex_value_opcode,0FFh
+	   FF
+ 00000B0D  EB 07		jmp opcode_find 
+ 00000B0F			register_opcode_value_nemonic1:
+ 00000B0F  C6 05 0000022B R	mov hex_value_opcode,48h
+	   48
+
+ 00000B16			opcode_find: 
+ 00000B16  8B 75 08		mov esi,[ebp+8]
+ 00000B19  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 00000B20  75 24		jnz memory_operand
+ 00000B22  56			push esi
+ 00000B23  E8 00000537		call cal_register_number
+ 00000B28  B9 00000008		mov ecx,8
+ 00000B2D  B0 00		mov al,0
+ 00000B2F			set_code:
+ 00000B2F  38 05 0000021B R	cmp register_number,al
+ 00000B35  75 0B		jnz direct_loop
+ 00000B37  00 05 0000022B R	add hex_value_opcode,al
+ 00000B3D  E9 0000009C		jmp code_found
+ 00000B42			direct_loop:
+ 00000B42  FE C0		inc al
+ 00000B44  E2 E9		loop set_code
+
+ 00000B46			memory_operand:
+ 00000B46  8B 75 08		mov esi,[ebp+8]
+ 00000B49  56			push esi
+ 00000B4A  E8 FFFFFDE9		call store_displacement_value
+
+ 00000B4F  80 3D 00000216 R	cmp check_displacement,00 ;checking for displacement
+	   00
+ 00000B56  75 10		jnz next_bits
+ 00000B58  C6 05 00000215 R	mov mod_bits,00
+	   00
+ 00000B5F  C6 05 0000022A R	mov memory_format,0
+	   00
+ 00000B66  EB 27		jmp further_processing
+
+ 00000B68			next_bits:
+ 00000B68  80 3D 00000216 R	cmp check_displacement,0
+	   00
+ 00000B6F  75 10		jnz next_bits1
+ 00000B71  C6 05 00000215 R	mov mod_bits,01
+	   01
+ 00000B78  C6 05 0000022A R	mov memory_format,1
+	   01
+ 00000B7F  EB 0E		jmp further_processing
+
+ 00000B81			next_bits1:
+ 00000B81  C6 05 00000215 R	mov mod_bits,10
+	   0A
+ 00000B88  C6 05 0000022A R	mov memory_format,1
+	   01
+
+ 00000B8F			further_processing:
+ 00000B8F  8B 75 08		mov esi,[ebp+8]
+ 00000B92  56			push esi ;pushing offset of partciular memory operand
+ 00000B93  E8 000000F5		call cal_register_bits
+
+ 00000B98  8B 75 08		mov esi,[ebp+8] 
+ 00000B9B  56			push esi ;pushing offset of partciular memory operand
+ 00000B9C  E8 000002A5		call set_rm_number
+
+ 00000BA1  BF 0000021D R	mov edi,offset r_m_bits
+ 00000BA6  BE 000001B4 R	mov esi,offset register_values
+ 00000BAB  B3 00		mov bl,0
+ 00000BAD  B9 00000007		mov ecx,7
+ 00000BB2			l3: 
+ 00000BB2  8B D1		mov edx,ecx
+ 00000BB4  38 1D 00000220 R	cmp r_m_number,bl
+ 00000BBA  75 14		jnz direct_loop1
+ 00000BBC  B9 00000003		mov ecx,3
+ 00000BC1			l4:
+ 00000BC1  8A 06		mov al,[esi]
+ 00000BC3  2C 30		sub al,48
+ 00000BC5  88 07		mov [edi],al
+ 00000BC7  47			inc edi
+ 00000BC8  46			inc esi
+ 00000BC9  83 F9 01		cmp ecx,1
+ 00000BCC  74 0B		jz ex
+ 00000BCE  E2 F1		loop l4
+ 00000BD0			direct_loop1:
+ 00000BD0  FE C3		inc bl
+ 00000BD2  83 C6 04		add esi,4
+ 00000BD5  8B CA		mov ecx,edx
+ 00000BD7  E2 D9		loop l3
+ 00000BD9			ex:
+ 00000BD9  E8 00000414		call store_compelete_r_mbyte
+
+ 00000BDE			code_found:
+ 00000BDE  5D			pop ebp
+ 00000BDF  C2 0004		ret 4
+ 00000BE2			cal_one_operand_memory_register endp
+
+
+
+ 00000BE2			cal_one_register_one_immidaite_value proc
+ 00000BE2  55			push ebp
+ 00000BE3  8B EC		mov ebp,esp
+ 00000BE5  E8 FFFFFE33		call cal_one_operand_memory_register
+ 00000BEA  E8 FFFFFCF8		call store_immidiate_value
+ 00000BEF  5D			pop ebp
+ 00000BF0  C2 0004		ret 4
+ 00000BF3			cal_one_register_one_immidaite_value endp
+
+ 00000BF3			convert_8emlemnts_array_into8bithexvalue proc
+ 00000BF3  55			push ebp
+ 00000BF4  8B EC		mov ebp,esp
+ 00000BF6  8B 75 08		mov esi,[ebp+8]
+ 00000BF9  C6 05 0000022B R	mov hex_value_opcode,0 ;initially zero
+	   00
+ 00000C00  B9 00000008		mov ecx,8
+ 00000C05  BB 00000000		mov ebx,0
+ 00000C0A  B3 00		mov bl,0
+ 00000C0C  F8			clc 
+ 00000C0D			l1:
+ 00000C0D  8A 06		mov al,[esi]
+ 00000C0F  D0 D8		rcr al,1    ;from this we get the lsb (one bit) of the that particular element in the cf 
+
+ 00000C11  D0 D3		rcl bl,1   ;here i store the particular bit of cf from the lsb bit of bl 
+ 00000C13  46			inc esi 
+ 00000C14  E2 F7		loop l1
+ 00000C16  88 1D 0000022B R	mov hex_value_opcode,bl
+ 00000C1C  5D			pop ebp
+ 00000C1D  C2 0004		ret 4
+ 00000C20			convert_8emlemnts_array_into8bithexvalue endp
+
+ 00000C20			cal_modbits proc USES esi edi ebx
+ 00000C23  55			push ebp
+ 00000C24  8B EC		mov ebp,esp
+ 00000C26  E8 FFFFF99E		call check_source_operand
+ 00000C2B  E8 FFFFFB4D		call check_destination_operand
+				    ;;;;;;;;;;;;calculating mod bits;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+				; 1st check
+				; checking for mod = 11
+ 00000C30  80 3D 00000211 R	cmp d_bit,0  ;looking for source operand as a register
+	   00
+ 00000C37  75 12		jnz second_check
+ 00000C39  80 3D 00000213 R	cmp d_operand_check,1 ;looking for destination operand as a register
+	   01
+ 00000C40  75 09		jnz second_check
+ 00000C42  C6 05 00000215 R	mov mod_bits,11
+	   0B
+ 00000C49  EB 3D		jmp mod_bits_found
+
+ 00000C4B			second_check:
+				; checking for mod = 00
+ 00000C4B  80 3D 00000211 R	cmp d_bit,1       ;looking for source operand as a memroy
+	   01
+ 00000C52  74 09		jz mod_value_00
+ 00000C54  80 3D 00000213 R	cmp d_operand_check,0 ;looking for destination operand as a memory
+	   00
+ 00000C5B  75 12		jnz third_check
+ 00000C5D			mod_value_00:
+ 00000C5D  80 3D 00000216 R	cmp check_displacement,00 ;checking for displacement
+	   00
+ 00000C64  75 09		jnz third_check
+ 00000C66  C6 05 00000215 R	mov mod_bits,00
+	   00
+ 00000C6D  EB 19		jmp mod_bits_found
+
+ 00000C6F			third_check:
+				; checking for mod = 01
+ 00000C6F  80 3D 00000216 R	cmp check_displacement,0
+	   00
+ 00000C76  75 09		jnz fourth_check
+ 00000C78  C6 05 00000215 R	mov mod_bits,01
+	   01
+ 00000C7F  EB 07		jmp mod_bits_found
+
+ 00000C81			fourth_check:
+				; checking for mod = 10
+				; if above three  conditions of mod_bits fails so it means displacement is 16/32 bits
+				; so mod_bits = 10
+ 00000C81  C6 05 00000215 R	mov mod_bits,10
+	   0A
+
+ 00000C88			mod_bits_found:
+ 00000C88  5D			pop ebp
+				ret
+ 00000C8D			cal_modbits endp
+
+ 00000C8D			cal_register_bits proc USES esi edi ebx
+ 00000C90  55			push ebp
+ 00000C91  8B EC		mov ebp,esp
+ 00000C93  8B 5D 08		mov ebx,[ebp+8]
+ 00000C96  C6 05 0000021B R	mov register_number,0 ;initially we set it to the zero and we use a count variable
+	   00
+				                      ; it is like a count which is added to register number according to number
+				;;;;;;;;; condition where both are registers;;;;;;;;;;;;;;;;;;;;
+				;for register bits i have used numbering for each register like 
+				;eax/ax/al = 0 and ecx/cx/cl = 1 edx/dx/dl = 2 and ebx/bx/bl = 3
+				;esp/sp/ah = 4  ebp/bp/ch = 5   esi/si/dh = 6  edi/di/bh = 7 
+
+				;1st_condition
+ 00000C9D  80 3D 00000215 R	cmp mod_bits,11
+	   0B
+ 00000CA4  75 17		jnz second_condition
+ 00000CA6  68 000000D7 R	push offset s_operand 
+ 00000CAB  E8 000003AF		call cal_register_number
+ 00000CB0  EB 2B		jmp store_register_bits
+
+ 00000CB2			source_condition:
+ 00000CB2  8B 5D 08		mov ebx,[ebp+8]
+ 00000CB5  53			push ebx
+ 00000CB6  E8 000003A4		call cal_register_number
+ 00000CBB  EB 20		jmp store_register_bits
+
+
+ 00000CBD			second_condition:
+ 00000CBD  80 3D 00000214 R	cmp s_operand_check,1
+	   01
+ 00000CC4  75 02		jnz check_destination
+
+ 00000CC6  EB EA		jmp source_condition
+
+ 00000CC8			check_destination:
+ 00000CC8  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 00000CCF  75 51		jnz other_condition
+ 00000CD1  68 0000010D R	push offset d_operand
+ 00000CD6  E8 00000384		call cal_register_number
+ 00000CDB  EB 00		jmp store_register_bits
+
+
+ 00000CDD			store_register_bits:
+				;;;; storing register bits
+ 00000CDD  B9 00000008		mov ecx,8
+ 00000CE2  BE 00000218 R	mov esi,offset register_bits
+ 00000CE7  BF 000001B4 R	mov edi,offset register_values
+ 00000CEC  C6 05 0000021C R	mov register_count,0
+	   00
+ 00000CF3  8A 15 0000021C R	mov dl,register_count
+ 00000CF9			l1:
+ 00000CF9  38 15 0000021B R	cmp register_number,dl
+ 00000CFF  75 1A		jnz direct_l
+ 00000D01  B9 00000003		mov ecx,3
+ 00000D06			inner_l:
+ 00000D06  8A 07		mov al,[edi]
+ 00000D08  2C 30		sub al,48 ;because it firstly stores ascii value
+ 00000D0A  88 06		mov [esi],al
+ 00000D0C  83 C7 01		add edi,type register_values
+ 00000D0F  83 C6 01		add esi,type register_bits
+ 00000D12  83 F9 01		cmp ecx,1
+ 00000D15  75 02		jnz inner_loop
+ 00000D17  EB 65		jmp register_bits_find
+ 00000D19			inner_loop:
+ 00000D19  E2 EB		loop inner_l
+ 00000D1B			direct_l:
+ 00000D1B  83 C7 04		add edi,4
+ 00000D1E  FE C2		inc dl
+ 00000D20  E2 D7		loop l1
+
+ 00000D22			other_condition:
+				;;if there is one memory operand and immidiate value
+ 00000D22  80 3D 00000214 R	cmp s_operand_check,00 ;means if there is immediate value at source operand
+	   00
+ 00000D29  75 53		jnz ex
+ 00000D2B  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 00000D32  75 4A		jnz ex
+				;;;;;; conditions for opcode extension;;;;;;;;;;;;;
+ 00000D34  E8 00000459		call cal_nemonic_number
+				;; storing register bits if there is one memory operand and immidiate value
+ 00000D39  B9 00000007		mov ecx,7
+ 00000D3E  BE 00000218 R	mov esi,offset register_bits
+ 00000D43  BF 000001F3 R	mov edi,offset opcode_extension
+ 00000D48  C6 05 0000020F R	mov nemonic_count,0
+	   00
+ 00000D4F  8A 15 0000020F R	mov dl,nemonic_count
+ 00000D55			loop2:
+ 00000D55  38 15 00000210 R	cmp nemonic_number,dl
+ 00000D5B  75 1A		jnz direct_l2
+ 00000D5D  B9 00000003		mov ecx,3
+ 00000D62			inner_l2:
+ 00000D62  8A 07		mov al,[edi]
+ 00000D64  2C 30		sub al,48 ;because it firstly stores ascii value
+ 00000D66  88 06		mov [esi],al
+ 00000D68  83 C7 01		add edi,type opcode_extension
+ 00000D6B  83 C6 01		add esi,type register_bits
+ 00000D6E  83 F9 01		cmp ecx,1
+ 00000D71  75 02		jnz inner_loop2
+ 00000D73  EB 09		jmp register_bits_find
+ 00000D75			inner_loop2:
+ 00000D75  E2 EB		loop inner_l2
+ 00000D77			direct_l2:
+ 00000D77  83 C7 04		add edi,4
+ 00000D7A  FE C2		inc dl
+ 00000D7C  E2 D7		loop loop2
+
+ 00000D7E			register_bits_find:
+ 00000D7E			ex:
+ 00000D7E  5D			pop ebp
+ 00000D82  C2 0004		ret 4
+ 00000D85			cal_register_bits endp
+
+ 00000D85			cal_RMbyte_of_register_operand proc
+ 00000D85  55			push ebp
+ 00000D86  8B EC		mov ebp,esp
+
+ 00000D88  C6 05 00000215 R	mov mod_bits,11
+	   0B
+
+				;now calculating the register bits
+ 00000D8F  68 000000D7 R	push offset s_operand
+ 00000D94  E8 FFFFFEF4		call cal_register_bits
+
+				; now calculating the r/m bits
+ 00000D99  68 0000010D R	push offset d_operand
+ 00000D9E  E8 000002BC		call cal_register_number
+
+
+ 00000DA3  BF 0000021D R	mov edi,offset r_m_bits
+ 00000DA8  BE 000001B4 R	mov esi,offset register_values
+ 00000DAD  B3 00		mov bl,0
+ 00000DAF  B9 00000008		mov ecx,8
+ 00000DB4			l1: 
+ 00000DB4  8B D1		mov edx,ecx
+ 00000DB6  38 1D 0000021B R	cmp register_number,bl
+ 00000DBC  75 14		jnz direct_loop
+ 00000DBE  B9 00000003		mov ecx,3
+ 00000DC3			l2:
+ 00000DC3  8A 06		mov al,[esi]
+ 00000DC5  2C 30		sub al,48
+ 00000DC7  88 07		mov [edi],al
+ 00000DC9  47			inc edi
+ 00000DCA  46			inc esi
+ 00000DCB  83 F9 01		cmp ecx,1
+ 00000DCE  74 0B		jz ex
+ 00000DD0  E2 F1		loop l2
+ 00000DD2			direct_loop:
+ 00000DD2  FE C3		inc bl
+ 00000DD4  83 C6 04		add esi,4
+ 00000DD7  8B CA		mov ecx,edx
+ 00000DD9  E2 D9		loop l1
+ 00000DDB			ex:
+ 00000DDB  E8 00000212		call store_compelete_r_mbyte
+ 00000DE0  5D			pop ebp
+ 00000DE1  C3			ret
+ 00000DE2			cal_RMbyte_of_register_operand endp
+
+ 00000DE2			cal_RMbyte proc
+ 00000DE2  55			push ebp
+ 00000DE3  8B EC		mov ebp,esp
+ 00000DE5  8B 75 08		mov esi,[ebp+8]
+ 00000DE8  56			push esi ;pushing offset of partciular memory operand
+ 00000DE9  E8 FFFFFB4A		call store_displacement_value
+
+ 00000DEE  E8 FFFFFE2D		call cal_modbits
+
+ 00000DF3  8B 75 08		mov esi,[ebp+8]
+ 00000DF6  56			push esi ;pushing offset of partciular memory operand
+ 00000DF7  E8 FFFFFE91		call cal_register_bits
+
+ 00000DFC  8B 75 08		mov esi,[ebp+8] 
+ 00000DFF  56			push esi ;pushing offset of partciular memory operand
+ 00000E00  E8 00000041		call set_rm_number
+
+ 00000E05  BF 0000021D R	mov edi,offset r_m_bits
+ 00000E0A  BE 000001B4 R	mov esi,offset register_values
+ 00000E0F  B3 00		mov bl,0
+ 00000E11  B9 00000007		mov ecx,7
+ 00000E16			l3: 
+ 00000E16  8B D1		mov edx,ecx
+ 00000E18  38 1D 00000220 R	cmp r_m_number,bl
+ 00000E1E  75 14		jnz direct_loop1
+ 00000E20  B9 00000003		mov ecx,3
+ 00000E25			l4:
+ 00000E25  8A 06		mov al,[esi]
+ 00000E27  2C 30		sub al,48
+ 00000E29  88 07		mov [edi],al
+ 00000E2B  47			inc edi
+ 00000E2C  46			inc esi
+ 00000E2D  83 F9 01		cmp ecx,1
+ 00000E30  74 0B		jz ex
+ 00000E32  E2 F1		loop l4
+ 00000E34			direct_loop1:
+ 00000E34  FE C3		inc bl
+ 00000E36  83 C6 04		add esi,4
+ 00000E39  8B CA		mov ecx,edx
+ 00000E3B  E2 D9		loop l3
+ 00000E3D			ex:
+ 00000E3D  E8 000001B0		call store_compelete_r_mbyte
+ 00000E42  5D			pop ebp
+ 00000E43  C2 0004		ret 4
+ 00000E46			cal_RMbyte endp
+
+ 00000E46			set_rm_number proc
+ 00000E46  55			push ebp
+ 00000E47  8B EC		mov ebp,esp
+ 00000E49  8B 75 08		mov esi,[ebp+8]
+
+ 00000E4C  80 3D 0000022A R	cmp memory_format,0
+	   00
+ 00000E53  75 0C		jnz inner_check
+ 00000E55  C6 05 00000220 R	mov r_m_number,6
+	   06
+ 00000E5C  E9 0000018D		jmp r_m_bits_calculated
+ 00000E61			inner_check:
+ 00000E61  80 3D 0000022A R	cmp memory_format,1
+	   01
+ 00000E68  0F 85 00000180	jnz ex
+ 00000E6E  8A 06		mov al,[esi]
+ 00000E70  B3 65		mov bl,'e'
+ 00000E72  46			inc esi ;because this condition is true when there is format like [esi] so that's why i am 
+				        ;increamenting by which it can move to the e
+ 00000E73  38 1E		cmp [esi],bl
+ 00000E75  75 4A		jnz check_next
+ 00000E77  46			inc esi
+ 00000E78  B3 73		mov bl,'s'
+ 00000E7A  38 1E		cmp [esi],bl
+ 00000E7C  75 0C		jnz inner_check_next1
+ 00000E7E  C6 05 00000220 R	mov r_m_number,4
+	   04
+ 00000E85  E9 00000164		jmp r_m_bits_calculated
+ 00000E8A			inner_check_next1:
+ 00000E8A  B3 64		mov bl,'d'
+ 00000E8C  38 1E		cmp[esi],bl
+ 00000E8E  75 0C		jnz inner_check_next2
+ 00000E90  C6 05 00000220 R	mov r_m_number,5
+	   05
+ 00000E97  E9 00000152		jmp r_m_bits_calculated
+ 00000E9C			inner_check_next2:
+ 00000E9C  B3 62		mov bl,'b'
+ 00000E9E  38 1E		cmp[esi],bl
+ 00000EA0  75 1F		jnz check_next
+ 00000EA2  B3 78		mov bl,'x'
+ 00000EA4  46			inc esi
+ 00000EA5  38 1E		cmp [esi],bl
+ 00000EA7  75 0C		jnz final_check
+ 00000EA9  C6 05 00000220 R	mov r_m_number,7
+	   07
+ 00000EB0  E9 00000139		jmp r_m_bits_calculated
+ 00000EB5			final_check:
+ 00000EB5  C6 05 00000220 R	mov r_m_number,6
+	   06
+ 00000EBC  E9 0000012D		jmp r_m_bits_calculated
+
+ 00000EC1			check_next:
+ 00000EC1  8B 75 08		mov esi,[ebp+8]
+ 00000EC4  46			inc esi
+ 00000EC5  B3 73		mov bl,'s'
+ 00000EC7  38 1E		cmp [esi],bl
+ 00000EC9  75 0C		jnz inner_check_next3
+ 00000ECB  C6 05 00000220 R	mov r_m_number,4
+	   04
+ 00000ED2  E9 00000117		jmp r_m_bits_calculated
+ 00000ED7			inner_check_next3:
+ 00000ED7  B3 64		mov bl,'d'
+ 00000ED9  38 1E		cmp[esi],bl
+ 00000EDB  75 0C		jnz inner_check_next4
+ 00000EDD  C6 05 00000220 R	mov r_m_number,5
+	   05
+ 00000EE4  E9 00000105		jmp r_m_bits_calculated
+ 00000EE9			inner_check_next4:
+ 00000EE9  B3 62		mov bl,'b'
+ 00000EEB  38 1E		cmp [esi],bl
+ 00000EED  75 1F		jnz check_next1
+ 00000EEF  B3 78		mov bl,'x'
+ 00000EF1  46			inc esi
+ 00000EF2  38 1E		cmp [esi],bl
+ 00000EF4  75 0C		jnz final_check1
+ 00000EF6  C6 05 00000220 R	mov r_m_number,7
+	   07
+ 00000EFD  E9 000000EC		jmp r_m_bits_calculated
+ 00000F02			final_check1:
+ 00000F02  C6 05 00000220 R	mov r_m_number,6
+	   06
+ 00000F09  E9 000000E0		jmp r_m_bits_calculated
+
+
+ 00000F0E			check_next1:
+ 00000F0E  8B 75 08		mov esi,[ebp+8]
+ 00000F11  46			inc esi
+ 00000F12  B3 65		mov bl,'e'
+ 00000F14  38 1E		cmp [esi],bl
+ 00000F16  75 77		jnz check_next2
+ 00000F18  46			inc esi
+ 00000F19  B3 62		mov bl,'b'
+ 00000F1B  38 1E		cmp [esi],bl
+ 00000F1D  0F 85 000000CB	jnz ex
+ 00000F23  46			inc esi
+ 00000F24  B3 78		mov bl,'x'
+ 00000F26  38 1E		cmp [esi],bl
+ 00000F28  75 05		jnz inner_check_next5
+ 00000F2A  83 C6 02		add esi,2 ;because plus sign come because format is [ebx+esi]
+ 00000F2D  EB 0D		jmp inner_check_next6
+ 00000F2F			inner_check_next5:
+ 00000F2F  B3 70		mov bl,'p'
+ 00000F31  38 1E		cmp [esi],bl
+ 00000F33  0F 85 000000B5	jnz ex
+ 00000F39  83 C6 02		add esi,2 ;because plus sign come because format is [ebp+esi]
+ 00000F3C			inner_check_next6: ;now esi pointer the value after (+)
+ 00000F3C  B3 65		mov bl,'e'
+ 00000F3E  38 1E		cmp [esi],bl
+ 00000F40  0F 85 000000A8	jnz ex
+ 00000F46  B3 73		mov bl,'s'
+ 00000F48  46			inc esi
+ 00000F49  38 1E		cmp[esi],bl
+ 00000F4B  75 21		jnz inner_check_next7
+
+ 00000F4D  83 EE 03		sub esi,3      ; i have subtracted three form esi because i have to check whether p or x 
+				               ; is present before the + sign because i have to set the value accordingly
+ 00000F50  B3 78		mov bl,'x'
+ 00000F52  38 1E		cmp[esi],bl
+ 00000F54  75 0C		jnz inner_check_next8
+ 00000F56  C6 05 00000220 R	mov r_m_number,0
+	   00
+ 00000F5D  E9 0000008C		jmp r_m_bits_calculated
+
+ 00000F62			inner_check_next8:
+
+ 00000F62  C6 05 00000220 R	mov r_m_number,2
+	   02
+ 00000F69  E9 00000080		jmp r_m_bits_calculated
+
+ 00000F6E			inner_check_next7:
+ 00000F6E  B3 64		mov bl,'d'
+ 00000F70  38 1E		cmp[esi],bl
+ 00000F72  75 7A		jnz ex 
+ 00000F74  83 EE 03		sub esi,3      ; i have subtracted three form esi because i have to check whether p or x 
+				               ; is present before the + sign because i have to set the value accordingly
+ 00000F77  B3 78		mov bl,'x'
+ 00000F79  38 1E		cmp[esi],bl
+ 00000F7B  75 09		jnz inner_check_next9
+ 00000F7D  C6 05 00000220 R	mov r_m_number,0
+	   00
+ 00000F84  EB 68		jmp r_m_bits_calculated
+
+ 00000F86			inner_check_next9:
+
+ 00000F86  C6 05 00000220 R	mov r_m_number,2
+	   02
+ 00000F8D  EB 5F		jmp r_m_bits_calculated
+
+ 00000F8F			check_next2:
+ 00000F8F  8B 75 08		mov esi,[ebp+8]
+ 00000F92  46			inc esi
+ 00000F93  B3 62		mov bl,'b'
+ 00000F95  38 1E		cmp [esi],bl
+ 00000F97  75 55		jnz ex
+ 00000F99  46			inc esi
+ 00000F9A  B3 78		mov bl,'x'
+ 00000F9C  38 1E		cmp [esi],bl
+ 00000F9E  75 05		jnz inner_check_next10
+ 00000FA0  83 C6 02		add esi,2 ;because plus sign come because format is [bx+si]
+ 00000FA3  EB 09		jmp inner_check_next11
+ 00000FA5			inner_check_next10:
+ 00000FA5  B3 70		mov bl,'p'
+ 00000FA7  38 1E		cmp [esi],bl
+ 00000FA9  75 43		jnz ex
+ 00000FAB  83 C6 02		add esi,2 ;because plus sign come because format is [bp+si]
+ 00000FAE			inner_check_next11: ;now esi pointer the value after (+)
+ 00000FAE  B3 73		mov bl,'s'
+ 00000FB0  38 1E		cmp[esi],bl
+ 00000FB2  75 1B		jnz inner_check_next12
+
+ 00000FB4  83 EE 02		sub esi,2     ; i have subtracted three form esi because i have to check whether p or x 
+				               ; is present before the + sign because i have to set the value accordingly
+ 00000FB7  B3 78		mov bl,'x'
+ 00000FB9  38 1E		cmp[esi],bl
+ 00000FBB  75 09		jnz inner_check_next13
+ 00000FBD  C6 05 00000220 R	mov r_m_number,0
+	   00
+ 00000FC4  EB 28		jmp r_m_bits_calculated
+
+ 00000FC6			inner_check_next13:
+
+ 00000FC6  C6 05 00000220 R	mov r_m_number,2
+	   02
+ 00000FCD  EB 1F		jmp r_m_bits_calculated
+
+ 00000FCF			inner_check_next12:
+ 00000FCF  B3 64		mov bl,'d'
+ 00000FD1  38 1E		cmp[esi],bl
+ 00000FD3  75 19		jnz ex 
+ 00000FD5  83 EE 03		sub esi,3      ; i have subtracted three form esi because i have to check whether p or x 
+				               ; is present before the + sign because i have to set the value accordingly
+ 00000FD8  B3 78		mov bl,'x'
+ 00000FDA  38 1E		cmp[esi],bl
+ 00000FDC  75 09		jnz inner_check_next14
+ 00000FDE  C6 05 00000220 R	mov r_m_number,0
+	   00
+ 00000FE5  EB 07		jmp r_m_bits_calculated
+
+ 00000FE7			inner_check_next14:
+
+ 00000FE7  C6 05 00000220 R	mov r_m_number,2
+	   02
+ 00000FEE			r_m_bits_calculated:
+ 00000FEE			ex:
+ 00000FEE  5D			pop ebp
+ 00000FEF  C2 0004		ret 4
+ 00000FF2			set_rm_number endp
+
+
+ 00000FF2			store_compelete_r_mbyte proc
+ 00000FF2  55			push ebp
+ 00000FF3  8B EC		mov ebp,esp
+ 00000FF5  BE 00000222 R	mov esi,offset complete_r_mbyte
+ 00000FFA  BF 00000218 R	mov edi,offset register_bits
+
+				;firstly storing mod bits
+
+ 00000FFF  A0 00000215 R	mov al,mod_bits
+
+ 00001004  3C 0B		cmp al,11
+ 00001006  75 0B		jnz check_next
+ 00001008  B3 01		mov bl,1
+ 0000100A  88 1E		mov [esi],bl
+ 0000100C  46			inc esi
+ 0000100D  B3 01		mov bl,1
+ 0000100F  88 1E		mov [esi],bl
+ 00001011  EB 27		jmp mod_bits_stored
+
+ 00001013			check_next:
+ 00001013  3C 00		cmp al,00
+ 00001015  75 0B		jnz check_next1
+ 00001017  B3 00		mov bl,0
+ 00001019  88 1E		mov [esi],bl
+ 0000101B  46			inc esi
+ 0000101C  B3 00		mov bl,0
+ 0000101E  88 1E		mov [esi],bl
+ 00001020  EB 18		jmp mod_bits_stored
+
+ 00001022			check_next1:
+ 00001022  3C 01		cmp al,01
+ 00001024  75 0B		jnz check_next2
+ 00001026  B3 00		mov bl,0
+ 00001028  88 1E		mov [esi],bl
+ 0000102A  46			inc esi
+ 0000102B  B3 01		mov bl,1
+ 0000102D  88 1E		mov [esi],bl
+ 0000102F  EB 09		jmp mod_bits_stored
+
+ 00001031			check_next2:
+ 00001031  B3 01		mov bl,1
+ 00001033  88 1E		mov [esi],bl
+ 00001035  46			inc esi
+ 00001036  B3 00		mov bl,0
+ 00001038  88 1E		mov [esi],bl
+
+ 0000103A			mod_bits_stored:
+
+				; storing regsiter bits
+
+ 0000103A  8A 07		mov al,[edi]
+ 0000103C  B9 00000003		mov ecx,3
+ 00001041			l1:
+ 00001041  46			inc esi
+ 00001042  88 06		mov [esi],al
+ 00001044  47			inc edi
+ 00001045  8A 07		mov al,[edi]
+ 00001047  E2 F8		loop l1
+
+				;storing r/m bits
+
+ 00001049  BB 0000021D R	mov ebx,offset r_m_bits
+ 0000104E  8A 03		mov al,[ebx]
+ 00001050  B9 00000003		mov ecx,3
+ 00001055			l2:
+ 00001055  46			inc esi
+ 00001056  88 06		mov [esi],al
+ 00001058  43			inc ebx
+ 00001059  8A 03		mov al,[ebx]
+ 0000105B  E2 F8		loop l2
+
+				;;;;;complete r/m byte stored
+
+ 0000105D  5D			pop ebp
+ 0000105E  C3			ret
+ 0000105F			store_compelete_r_mbyte endp
+
+
+ 0000105F			cal_register_number proc 
+ 0000105F  55			push ebp
+ 00001060  8B EC		mov ebp,esp
+ 00001062  8B 75 08		mov esi,[ebp+8]
+ 00001065  C6 05 0000021C R	mov register_count,0 ;initially it also set to the zero
+	   00
+ 0000106C  C6 05 0000021B R	mov register_number,0
+	   00
+ 00001073  8B FE		mov edi,esi
+ 00001075  BB 00000164 R	mov ebx,offset register32
+ 0000107A  8A 07		mov al,[edi]
+ 0000107C  B9 00000008		mov ecx,8
+ 00001081  3A 03		cmp al,[ebx]
+ 00001083  75 3A		jnz out_loop32
+ 00001085			l32:
+ 00001085  8B D1		mov edx,ecx 
+ 00001087  B9 00000003		mov ecx,3
+ 0000108C  49			dec ecx
+ 0000108D			l2:
+ 0000108D  83 C3 01		add ebx,type register32
+ 00001090  83 C7 01		add edi,1
+ 00001093  8A 07		mov al,[edi]
+ 00001095  3A 03		cmp al,[ebx]
+ 00001097  75 16		jnz outerloop32
+ 00001099  83 F9 01		cmp ecx,1
+ 0000109C  75 0F		jnz inner
+ 0000109E  A0 0000021C R	mov al,register_count
+ 000010A3  A2 0000021B R	mov register_number,al
+ 000010A8  E9 000000E1		jmp ex 
+ 000010AD			inner:
+ 000010AD  E2 DE		loop l2
+ 000010AF			outerloop32:
+ 000010AF  83 EF 01		sub edi,1
+ 000010B2  83 C3 03		add ebx,3
+ 000010B5  FE 05 0000021C R	inc register_count
+ 000010BB  8B CA		mov ecx,edx
+ 000010BD  E2 C6		loop l32
+ 000010BF			out_loop32:
+
+ 000010BF  C6 05 0000021C R	mov register_count,0 ;again initialize with zero
+	   00
+
+				;checking 16bit resgister
+ 000010C6  8B FE		mov edi,esi
+ 000010C8  8A 07		mov al,[edi]
+ 000010CA  BB 00000184 R	mov ebx,offset register16
+ 000010CF  B9 00000008		mov ecx,8
+ 000010D4			l16:
+ 000010D4  3A 03		cmp al,[ebx]
+ 000010D6  75 23		jnz direct_check16
+ 000010D8  83 C3 01		add ebx,type register16
+ 000010DB  83 C7 01		add edi,1
+ 000010DE  8A 07		mov al,[edi]
+ 000010E0  3A 03		cmp al,[ebx]
+ 000010E2  75 0F		jnz outerloop16
+ 000010E4  A0 0000021C R	mov al,register_count
+ 000010E9  A2 0000021B R	mov register_number,al
+ 000010EE  E9 0000009B		jmp ex 
+ 000010F3			outerloop16:
+ 000010F3  83 EF 01		sub edi,1
+ 000010F6  83 C3 02		add ebx,2
+ 000010F9  EB 03		jmp direct_loop16
+
+ 000010FB			direct_check16:
+ 000010FB  83 C3 03		add ebx,3
+
+ 000010FE			direct_loop16:
+ 000010FE  FE 05 0000021C R	inc register_count
+ 00001104  E2 CE		loop l16
+
+ 00001106  C6 05 0000021C R	mov register_count,4 
+	   04
+
+				;checking higher 8 bit register
+ 0000110D  8B FE		mov edi,esi
+ 0000110F  8A 07		mov al,[edi]
+ 00001111  BB 000001A8 R	mov ebx,offset register_higher_8
+ 00001116  B9 00000004		mov ecx,4
+ 0000111B			l_higher8:
+ 0000111B  3A 03		cmp al,[ebx]
+ 0000111D  75 20		jnz direct_check_higher8
+ 0000111F  83 C3 01		add ebx,type register_higher_8
+ 00001122  83 C7 01		add edi,1
+ 00001125  8A 07		mov al,[edi]
+ 00001127  3A 03		cmp al,[ebx]
+ 00001129  75 0C		jnz outerloop_higher8
+ 0000112B  A0 0000021C R	mov al,register_count
+ 00001130  A2 0000021B R	mov register_number,al
+ 00001135  EB 57		jmp ex 
+ 00001137			outerloop_higher8:
+ 00001137  83 EF 01		sub edi,1
+ 0000113A  83 C3 02		add ebx,2
+ 0000113D  EB 03		jmp direct_loop_higher8
+
+ 0000113F			direct_check_higher8:
+ 0000113F  83 C3 03		add ebx,3
+
+ 00001142			direct_loop_higher8:
+ 00001142  FE 05 0000021C R	inc register_count
+ 00001148  E2 D1		loop l_higher8
+
+ 0000114A  C6 05 0000021C R	mov register_count,0
+	   00
+
+				;checking lower 8 bit register
+ 00001151  8B FE		mov edi,esi
+ 00001153  8A 07		mov al,[edi]
+ 00001155  BB 0000019C R	mov ebx,offset register_lower_8
+ 0000115A  B9 00000004		mov ecx,4
+ 0000115F			l_lower8:
+ 0000115F  3A 03		cmp al,[ebx]
+ 00001161  75 20		jnz direct_check_lower8
+ 00001163  83 C3 01		add ebx,type register_lower_8
+ 00001166  83 C7 01		add edi,1
+ 00001169  8A 07		mov al,[edi]
+ 0000116B  3A 03		cmp al,[ebx]
+ 0000116D  75 0C		jnz outerloop_lower8
+ 0000116F  A0 0000021C R	mov al,register_count
+ 00001174  A2 0000021B R	mov register_number,al
+ 00001179  EB 13		jmp ex 
+ 0000117B			outerloop_lower8:
+ 0000117B  83 EF 01		sub edi,1
+ 0000117E  83 C3 02		add ebx,2
+ 00001181  EB 03		jmp direct_loop_lower8
+
+ 00001183			direct_check_lower8:
+ 00001183  83 C3 03		add ebx,3
+
+ 00001186			direct_loop_lower8:
+ 00001186  FE 05 0000021C R	inc register_count
+ 0000118C  E2 D1		loop l_lower8
+
+ 0000118E			ex:
+ 0000118E  5D			pop ebp
+ 0000118F  C2 0004		ret 4
+ 00001192			cal_register_number endp
+
+ 00001192			cal_nemonic_number proc
+ 00001192  55			push ebp
+ 00001193  8B EC		mov ebp,esp
+ 00001195  BF 000000CE R	mov edi,offset nemonic
+ 0000119A  BB 000001D7 R	mov ebx,offset opcode_extension_nemonic
+ 0000119F  C6 05 0000020F R	mov nemonic_count,0
+	   00
+ 000011A6  C6 05 00000210 R	mov nemonic_number,0
+	   00
+ 000011AD  8A 07		mov al,[edi]
+ 000011AF  B9 00000007		mov ecx,7
+ 000011B4			l32:
+ 000011B4  8B D1		mov edx,ecx 
+ 000011B6  3A 03		cmp al,[ebx]
+ 000011B8  75 2A		jnz direct_check
+ 000011BA  B9 00000002		mov ecx,2
+ 000011BF			l2:
+ 000011BF  83 C3 01		add ebx,type register32
+ 000011C2  83 C7 01		add edi,type s_operand
+ 000011C5  8A 07		mov al,[edi]
+ 000011C7  3A 03		cmp al,[ebx]
+ 000011C9  75 13		jnz outerloop
+ 000011CB  83 F9 01		cmp ecx,1
+ 000011CE  75 0C		jnz inner
+ 000011D0  A0 0000020F R	mov al,nemonic_count
+ 000011D5  A2 00000210 R	mov nemonic_number,al
+ 000011DA  EB 15		jmp out_loop 
+ 000011DC			inner:
+ 000011DC  E2 E1		loop l2
+ 000011DE			outerloop:
+ 000011DE  83 EF 01		sub edi,type nemonic
+ 000011E1  83 C3 03		add ebx,3
+ 000011E4			direct_check:
+ 000011E4  83 C3 04		add ebx,4
+ 000011E7			direct_loop:
+ 000011E7  FE 05 0000020F R	inc nemonic_count
+ 000011ED  8B CA		mov ecx,edx
+ 000011EF  E2 C3		loop l32
+ 000011F1			out_loop:
+ 000011F1  5D			pop ebp
+ 000011F2  C3			ret 
+ 000011F3			cal_nemonic_number endp
+
+ 000011F3			cal_final_result proc
+ 000011F3  55			push ebp
+ 000011F4  8B EC		mov ebp,esp
+ 000011F6  BA 0000008A R	mov edx,offset result
+ 000011FB  E8 00000000 E	call writestring
+
+
+ 00001200  B8 00000000		mov eax,0
+ 00001205  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 0000120C  74 09		jz found
+ 0000120E  80 3D 00000214 R	cmp s_operand_check,1
+	   01
+ 00001215  75 21		jnz next_process
+ 00001217			found:
+ 00001217  80 3D 000001D6 R	cmp check_16bit,1 ;if there is 16_bit_operand then we have to appened prefix byte to final
+	   01
+				                  ;output because we have to differentiate that machine code from 32 bit.
+ 0000121E  75 18		jnz next_process
+ 00001220  C6 05 00000221 R	mov prefix_byte,66h
+	   66
+ 00001227  A0 00000221 R	mov al,prefix_byte
+ 0000122C  E8 00000000 E	call writehex
+ 00001231  B0 20		mov al,' '
+ 00001233  E8 00000000 E	call writechar
+
+ 00001238			next_process:
+ 00001238  A0 0000022B R	mov al,hex_value_opcode
+ 0000123D  E8 00000000 E	call writehex
+ 00001242  B0 20		mov al,' '
+ 00001244  E8 00000000 E	call writechar
+
+ 00001249  80 3D 00000217 R	cmp check_one_operand,1
+	   01
+ 00001250  75 2A		jnz next_check1
+ 00001252  80 3D 00000213 R	cmp d_operand_check,1
+	   01
+ 00001259  0F 84 0000008D	jz ex
+ 0000125F  68 00000222 R	push offset complete_r_mbyte
+ 00001264  E8 FFFFF98A		call convert_8emlemnts_array_into8bithexvalue
+ 00001269  A0 0000022B R	mov al,hex_value_opcode
+ 0000126E  E8 00000000 E	call writehex
+ 00001273  B0 20		mov al,' '
+ 00001275  E8 00000000 E	call writechar
+ 0000127A  EB 70		jmp next_process2
+
+
+
+
+ 0000127C			next_check1:
+ 0000127C  80 3D 00000215 R	cmp mod_bits,11
+	   0B
+ 00001283  75 1D		jnz next_check
+ 00001285  68 00000222 R	push offset complete_r_mbyte
+ 0000128A  E8 FFFFF964		call convert_8emlemnts_array_into8bithexvalue
+ 0000128F  A0 0000022B R	mov al,hex_value_opcode
+ 00001294  E8 00000000 E	call writehex
+ 00001299  B0 20		mov al,' '
+ 0000129B  E8 00000000 E	call writechar
+ 000012A0  EB 4A		jmp next_process2
+
+
+ 000012A2			next_check:
+
+ 000012A2  80 3D 00000213 R	cmp d_operand_check,0
+	   00
+ 000012A9  75 1D		jnz next_process1
+ 000012AB  68 00000222 R	push offset complete_r_mbyte
+ 000012B0  E8 FFFFF93E		call convert_8emlemnts_array_into8bithexvalue
+ 000012B5  A0 0000022B R	mov al,hex_value_opcode
+ 000012BA  E8 00000000 E	call writehex
+ 000012BF  B0 20		mov al,' '
+ 000012C1  E8 00000000 E	call writechar
+ 000012C6  EB 24		jmp next_process2
+
+ 000012C8			next_process1:
+ 000012C8  80 3D 00000214 R	cmp s_operand_check,0
+	   00
+ 000012CF  75 1B		jnz next_process2
+ 000012D1  68 00000222 R	push offset complete_r_mbyte
+ 000012D6  E8 FFFFF918		call convert_8emlemnts_array_into8bithexvalue
+ 000012DB  A0 0000022B R	mov al,hex_value_opcode
+ 000012E0  E8 00000000 E	call writehex
+ 000012E5  B0 20		mov al,' '
+ 000012E7  E8 00000000 E	call writechar
+ 000012EC			next_process2:
+ 000012EC			ex:
+ 000012EC  5D			pop ebp
+ 000012ED  C3			ret 
+ 000012EE			cal_final_result endp
+				END main
+
+				 
+
+
+Microsoft (R) Macro Assembler Version 11.00.50727.1	    12/21/20 15:23:05
+project.asm						     Symbols 2 - 1
+
+
+
+
+Structures and Unions:
+
+                N a m e                  Size
+                                         Offset      Type
+
+CONSOLE_CURSOR_INFO  . . . . . .	 00000008
+  dwSize . . . . . . . . . . . .	 00000000	 DWord
+  bVisible . . . . . . . . . . .	 00000004	 DWord
+CONSOLE_SCREEN_BUFFER_INFO . . .	 00000016
+  dwSize . . . . . . . . . . . .	 00000000	 DWord
+  dwCursorPosition . . . . . . .	 00000004	 DWord
+  wAttributes  . . . . . . . . .	 00000008	 Word
+  srWindow . . . . . . . . . . .	 0000000A	 QWord
+  dwMaximumWindowSize  . . . . .	 00000012	 DWord
+COORD  . . . . . . . . . . . . .	 00000004
+  X  . . . . . . . . . . . . . .	 00000000	 Word
+  Y  . . . . . . . . . . . . . .	 00000002	 Word
+FILETIME . . . . . . . . . . . .	 00000008
+  loDateTime . . . . . . . . . .	 00000000	 DWord
+  hiDateTime . . . . . . . . . .	 00000004	 DWord
+FOCUS_EVENT_RECORD . . . . . . .	 00000004
+  bSetFocus  . . . . . . . . . .	 00000000	 DWord
+FPU_ENVIRON  . . . . . . . . . .	 0000001C
+  controlWord  . . . . . . . . .	 00000000	 Word
+  statusWord . . . . . . . . . .	 00000004	 Word
+  tagWord  . . . . . . . . . . .	 00000008	 Word
+  instrPointerOffset . . . . . .	 0000000C	 DWord
+  instrPointerSelector . . . . .	 00000010	 DWord
+  operandPointerOffset . . . . .	 00000014	 DWord
+  operandPointerSelector . . . .	 00000018	 Word
+INPUT_RECORD . . . . . . . . . .	 00000014
+  EventType  . . . . . . . . . .	 00000000	 Word
+  Event  . . . . . . . . . . . .	 00000004	 XmmWord
+  bKeyDown . . . . . . . . . . .	 00000000	 DWord
+  wRepeatCount . . . . . . . . .	 00000004	 Word
+  wVirtualKeyCode  . . . . . . .	 00000006	 Word
+  wVirtualScanCode . . . . . . .	 00000008	 Word
+  uChar  . . . . . . . . . . . .	 0000000A	 Word
+  UnicodeChar  . . . . . . . . .	 00000000	 Word
+  AsciiChar  . . . . . . . . . .	 00000000	 Byte
+  dwControlKeyState  . . . . . .	 0000000C	 DWord
+  dwMousePosition  . . . . . . .	 00000000	 DWord
+  dwButtonState  . . . . . . . .	 00000004	 DWord
+  dwMouseControlKeyState . . . .	 00000008	 DWord
+  dwEventFlags . . . . . . . . .	 0000000C	 DWord
+  dwSize . . . . . . . . . . . .	 00000000	 DWord
+  dwCommandId  . . . . . . . . .	 00000000	 DWord
+  bSetFocus  . . . . . . . . . .	 00000000	 DWord
+KEY_EVENT_RECORD . . . . . . . .	 00000010
+  bKeyDown . . . . . . . . . . .	 00000000	 DWord
+  wRepeatCount . . . . . . . . .	 00000004	 Word
+  wVirtualKeyCode  . . . . . . .	 00000006	 Word
+  wVirtualScanCode . . . . . . .	 00000008	 Word
+  uChar  . . . . . . . . . . . .	 0000000A	 Word
+  UnicodeChar  . . . . . . . . .	 00000000	 Word
+  AsciiChar  . . . . . . . . . .	 00000000	 Byte
+  dwControlKeyState  . . . . . .	 0000000C	 DWord
+MENU_EVENT_RECORD  . . . . . . .	 00000004
+  dwCommandId  . . . . . . . . .	 00000000	 DWord
+MOUSE_EVENT_RECORD . . . . . . .	 00000010
+  dwMousePosition  . . . . . . .	 00000000	 DWord
+  dwButtonState  . . . . . . . .	 00000004	 DWord
+  dwMouseControlKeyState . . . .	 00000008	 DWord
+  dwEventFlags . . . . . . . . .	 0000000C	 DWord
+SMALL_RECT . . . . . . . . . . .	 00000008
+  Left . . . . . . . . . . . . .	 00000000	 Word
+  Top  . . . . . . . . . . . . .	 00000002	 Word
+  Right  . . . . . . . . . . . .	 00000004	 Word
+  Bottom . . . . . . . . . . . .	 00000006	 Word
+SYSTEMTIME . . . . . . . . . . .	 00000010
+  wYear  . . . . . . . . . . . .	 00000000	 Word
+  wMonth . . . . . . . . . . . .	 00000002	 Word
+  wDayOfWeek . . . . . . . . . .	 00000004	 Word
+  wDay . . . . . . . . . . . . .	 00000006	 Word
+  wHour  . . . . . . . . . . . .	 00000008	 Word
+  wMinute  . . . . . . . . . . .	 0000000A	 Word
+  wSecond  . . . . . . . . . . .	 0000000C	 Word
+  wMilliseconds  . . . . . . . .	 0000000E	 Word
+WINDOW_BUFFER_SIZE_RECORD  . . .	 00000004
+  dwSize . . . . . . . . . . . .	 00000000	 DWord
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000024C Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000012EE Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+CloseFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+CloseHandle  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetCommandTail . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetConsoleCP . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetConsoleScreenBufferInfo . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetDateTime  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetFileTime  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetKeyState  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetLastError . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetMaxXY . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetMseconds  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetNumberOfConsoleInputEvents  .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetProcessHeap . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetStdHandle . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetSystemTime  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+GetTickCount . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Gotoxy . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+HeapAlloc  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+HeapCreate . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+HeapFree . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+HeapSize . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+IsDigit  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+MsgBox . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+OpenInputFile  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ParseDecimal32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ParseInteger32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+PeekConsoleInputA  . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Random32 . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+RandomRange  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Randomize  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadChar . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadConsoleA . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadConsoleInputA  . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadDec  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadFile . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadFloat  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadFromFile . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadHex  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleScreenBufferSize . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleTextAttribute  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleTitleA . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetConsoleWindowInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetFilePointer . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+StrLength  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Str_compare  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteBinB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteBin . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteChar  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteConsoleA  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteConsoleOutputAttribute  . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteConsoleOutputCharacterA . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteDec . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteFloat . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteHexB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteHex . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteInt . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteStackFrameName  . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+cal_RMbyte_of_register_operand .	P Near	 00000D85 _TEXT	Length= 0000005D Public STDCALL
+  l1 . . . . . . . . . . . . . .	L Near	 00000DB4 _TEXT	
+  l2 . . . . . . . . . . . . . .	L Near	 00000DC3 _TEXT	
+  direct_loop  . . . . . . . . .	L Near	 00000DD2 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000DDB _TEXT	
+cal_RMbyte . . . . . . . . . . .	P Near	 00000DE2 _TEXT	Length= 00000064 Public STDCALL
+  l3 . . . . . . . . . . . . . .	L Near	 00000E16 _TEXT	
+  l4 . . . . . . . . . . . . . .	L Near	 00000E25 _TEXT	
+  direct_loop1 . . . . . . . . .	L Near	 00000E34 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000E3D _TEXT	
+cal_final_result . . . . . . . .	P Near	 000011F3 _TEXT	Length= 000000FB Public STDCALL
+  found  . . . . . . . . . . . .	L Near	 00001217 _TEXT	
+  next_process . . . . . . . . .	L Near	 00001238 _TEXT	
+  next_check1  . . . . . . . . .	L Near	 0000127C _TEXT	
+  next_check . . . . . . . . . .	L Near	 000012A2 _TEXT	
+  next_process1  . . . . . . . .	L Near	 000012C8 _TEXT	
+  next_process2  . . . . . . . .	L Near	 000012EC _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 000012EC _TEXT	
+cal_machine_code_if_mem_reg_immidiate 	P Near	 000003FE _TEXT	Length= 00000092 Public STDCALL
+  check_next . . . . . . . . . .	L Near	 00000435 _TEXT	
+  check_next1  . . . . . . . . .	L Near	 00000443 _TEXT	
+  condition_16_32  . . . . . . .	L Near	 00000451 _TEXT	
+  check_next2  . . . . . . . . .	L Near	 00000468 _TEXT	
+  check_next3  . . . . . . . . .	L Near	 00000476 _TEXT	
+  opcode_calculated  . . . . . .	L Near	 00000484 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 0000048E _TEXT	
+cal_modbits  . . . . . . . . . .	P Near	 00000C20 _TEXT	Length= 0000006D Public STDCALL
+  second_check . . . . . . . . .	L Near	 00000C4B _TEXT	
+  mod_value_00 . . . . . . . . .	L Near	 00000C5D _TEXT	
+  third_check  . . . . . . . . .	L Near	 00000C6F _TEXT	
+  fourth_check . . . . . . . . .	L Near	 00000C81 _TEXT	
+  mod_bits_found . . . . . . . .	L Near	 00000C88 _TEXT	
+cal_nemonic_number . . . . . . .	P Near	 00001192 _TEXT	Length= 00000061 Public STDCALL
+  l32  . . . . . . . . . . . . .	L Near	 000011B4 _TEXT	
+  l2 . . . . . . . . . . . . . .	L Near	 000011BF _TEXT	
+  inner  . . . . . . . . . . . .	L Near	 000011DC _TEXT	
+  outerloop  . . . . . . . . . .	L Near	 000011DE _TEXT	
+  direct_check . . . . . . . . .	L Near	 000011E4 _TEXT	
+  direct_loop  . . . . . . . . .	L Near	 000011E7 _TEXT	
+  out_loop . . . . . . . . . . .	L Near	 000011F1 _TEXT	
+cal_one_operand_memory_register 	P Near	 00000A1D _TEXT	Length= 000001C5 Public STDCALL
+  bit16_32 . . . . . . . . . . .	L Near	 00000A49 _TEXT	
+  check_operand_continue . . . .	L Near	 00000A52 _TEXT	
+  l1 . . . . . . . . . . . . . .	L Near	 00000A57 _TEXT	
+  jump_continue  . . . . . . . .	L Near	 00000A64 _TEXT	
+  check_operand  . . . . . . . .	L Near	 00000A67 _TEXT	
+  next_register  . . . . . . . .	L Near	 00000A85 _TEXT	
+  check_next_nemonic . . . . . .	L Near	 00000A91 _TEXT	
+  next_register1 . . . . . . . .	L Near	 00000AAC _TEXT	
+  check_next_nemonic1  . . . . .	L Near	 00000AB5 _TEXT	
+  next_register2 . . . . . . . .	L Near	 00000AD0 _TEXT	
+  register_opcode_value_nemonic 	L Near	 00000AE2 _TEXT	
+  check_next_nemonic2  . . . . .	L Near	 00000AEB _TEXT	
+  next_register3 . . . . . . . .	L Near	 00000AFD _TEXT	
+  register_opcode_value_nemonic1 .	L Near	 00000B0F _TEXT	
+  opcode_find  . . . . . . . . .	L Near	 00000B16 _TEXT	
+  set_code . . . . . . . . . . .	L Near	 00000B2F _TEXT	
+  direct_loop  . . . . . . . . .	L Near	 00000B42 _TEXT	
+  memory_operand . . . . . . . .	L Near	 00000B46 _TEXT	
+  next_bits  . . . . . . . . . .	L Near	 00000B68 _TEXT	
+  next_bits1 . . . . . . . . . .	L Near	 00000B81 _TEXT	
+  further_processing . . . . . .	L Near	 00000B8F _TEXT	
+  l3 . . . . . . . . . . . . . .	L Near	 00000BB2 _TEXT	
+  l4 . . . . . . . . . . . . . .	L Near	 00000BC1 _TEXT	
+  direct_loop1 . . . . . . . . .	L Near	 00000BD0 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000BD9 _TEXT	
+  code_found . . . . . . . . . .	L Near	 00000BDE _TEXT	
+cal_one_register_one_immidaite_value .	P Near	 00000BE2 _TEXT	Length= 00000011 Public STDCALL
+cal_opcode_if_accumlator . . . .	P Near	 00000275 _TEXT	Length= 00000189 Public STDCALL
+  check_ax0  . . . . . . . . . .	L Near	 000002E6 _TEXT	
+  xchg_condition . . . . . . . .	L Near	 000002FB _TEXT	
+  check_dest . . . . . . . . . .	L Near	 00000340 _TEXT	
+  check_ax1  . . . . . . . . . .	L Near	 0000038B _TEXT	
+  next_check . . . . . . . . . .	L Near	 0000039D _TEXT	
+  check_ax2  . . . . . . . . . .	L Near	 000003B4 _TEXT	
+  next_check1  . . . . . . . . .	L Near	 000003C6 _TEXT	
+  check_ax3  . . . . . . . . . .	L Near	 000003DF _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 000003FC _TEXT	
+cal_opcode . . . . . . . . . . .	P Near	 000004EE _TEXT	Length= 000000DB Public STDCALL
+  check_next . . . . . . . . . .	L Near	 00000543 _TEXT	
+  check_next1  . . . . . . . . .	L Near	 00000572 _TEXT	
+  check_next2  . . . . . . . . .	L Near	 000005A1 _TEXT	
+  opcode_found . . . . . . . . .	L Near	 000005C4 _TEXT	
+cal_register_bits  . . . . . . .	P Near	 00000C8D _TEXT	Length= 000000F8 Public STDCALL
+  source_condition . . . . . . .	L Near	 00000CB2 _TEXT	
+  second_condition . . . . . . .	L Near	 00000CBD _TEXT	
+  check_destination  . . . . . .	L Near	 00000CC8 _TEXT	
+  store_register_bits  . . . . .	L Near	 00000CDD _TEXT	
+  l1 . . . . . . . . . . . . . .	L Near	 00000CF9 _TEXT	
+  inner_l  . . . . . . . . . . .	L Near	 00000D06 _TEXT	
+  inner_loop . . . . . . . . . .	L Near	 00000D19 _TEXT	
+  direct_l . . . . . . . . . . .	L Near	 00000D1B _TEXT	
+  other_condition  . . . . . . .	L Near	 00000D22 _TEXT	
+  loop2  . . . . . . . . . . . .	L Near	 00000D55 _TEXT	
+  inner_l2 . . . . . . . . . . .	L Near	 00000D62 _TEXT	
+  inner_loop2  . . . . . . . . .	L Near	 00000D75 _TEXT	
+  direct_l2  . . . . . . . . . .	L Near	 00000D77 _TEXT	
+  register_bits_find . . . . . .	L Near	 00000D7E _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000D7E _TEXT	
+cal_register_number  . . . . . .	P Near	 0000105F _TEXT	Length= 00000133 Public STDCALL
+  l32  . . . . . . . . . . . . .	L Near	 00001085 _TEXT	
+  l2 . . . . . . . . . . . . . .	L Near	 0000108D _TEXT	
+  inner  . . . . . . . . . . . .	L Near	 000010AD _TEXT	
+  outerloop32  . . . . . . . . .	L Near	 000010AF _TEXT	
+  out_loop32 . . . . . . . . . .	L Near	 000010BF _TEXT	
+  l16  . . . . . . . . . . . . .	L Near	 000010D4 _TEXT	
+  outerloop16  . . . . . . . . .	L Near	 000010F3 _TEXT	
+  direct_check16 . . . . . . . .	L Near	 000010FB _TEXT	
+  direct_loop16  . . . . . . . .	L Near	 000010FE _TEXT	
+  l_higher8  . . . . . . . . . .	L Near	 0000111B _TEXT	
+  outerloop_higher8  . . . . . .	L Near	 00001137 _TEXT	
+  direct_check_higher8 . . . . .	L Near	 0000113F _TEXT	
+  direct_loop_higher8  . . . . .	L Near	 00001142 _TEXT	
+  l_lower8 . . . . . . . . . . .	L Near	 0000115F _TEXT	
+  outerloop_lower8 . . . . . . .	L Near	 0000117B _TEXT	
+  direct_check_lower8  . . . . .	L Near	 00001183 _TEXT	
+  direct_loop_lower8 . . . . . .	L Near	 00001186 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 0000118E _TEXT	
+check_destination_operand  . . .	P Near	 0000077D _TEXT	Length= 0000016A Public STDCALL
+  d_l32  . . . . . . . . . . . .	L Near	 00000795 _TEXT	
+  d_l2 . . . . . . . . . . . . .	L Near	 0000079E _TEXT	
+  d_inner  . . . . . . . . . . .	L Near	 000007C2 _TEXT	
+  d_outerloop32  . . . . . . . .	L Near	 000007C4 _TEXT	
+  d_out_loop32 . . . . . . . . .	L Near	 000007CE _TEXT	
+  d_l16  . . . . . . . . . . . .	L Near	 000007DF _TEXT	
+  d_outerloop16  . . . . . . . .	L Near	 00000809 _TEXT	
+  d_direct_check16 . . . . . . .	L Near	 00000811 _TEXT	
+  d_direct_loop16  . . . . . . .	L Near	 00000814 _TEXT	
+  d_l_higher8  . . . . . . . . .	L Near	 00000827 _TEXT	
+  d_outerloop_higher8  . . . . .	L Near	 0000084A _TEXT	
+  d_direct_check_higher8 . . . .	L Near	 00000852 _TEXT	
+  d_direct_loop_higher8  . . . .	L Near	 00000855 _TEXT	
+  d_l_lower8 . . . . . . . . . .	L Near	 00000868 _TEXT	
+  d_outerloop_lower8 . . . . . .	L Near	 00000888 _TEXT	
+  d_direct_check_lower8  . . . .	L Near	 00000890 _TEXT	
+  d_direct_loop_lower8 . . . . .	L Near	 00000893 _TEXT	
+  l1 . . . . . . . . . . . . . .	L Near	 000008A6 _TEXT	
+  next1  . . . . . . . . . . . .	L Near	 000008B7 _TEXT	
+  next2  . . . . . . . . . . . .	L Near	 000008CA _TEXT	
+  next3  . . . . . . . . . . . .	L Near	 000008D7 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 000008E5 _TEXT	
+check_operand_al . . . . . . . .	P Near	 00000490 _TEXT	Length= 0000002F Public STDCALL
+  l1 . . . . . . . . . . . . . .	L Near	 0000049D _TEXT	
+  next_condition . . . . . . . .	L Near	 000004AF _TEXT	
+  out_loop . . . . . . . . . . .	L Near	 000004B4 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 000004BB _TEXT	
+check_operand_ax . . . . . . . .	P Near	 000004BF _TEXT	Length= 0000002F Public STDCALL
+  l1 . . . . . . . . . . . . . .	L Near	 000004CC _TEXT	
+  next_condition . . . . . . . .	L Near	 000004DE _TEXT	
+  out_loop . . . . . . . . . . .	L Near	 000004E3 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 000004EA _TEXT	
+check_source_operand . . . . . .	P Near	 000005C9 _TEXT	Length= 000001B4 Public STDCALL
+  l32  . . . . . . . . . . . . .	L Near	 000005E1 _TEXT	
+  l2 . . . . . . . . . . . . . .	L Near	 000005EA _TEXT	
+  inner  . . . . . . . . . . . .	L Near	 00000615 _TEXT	
+  outerloop32  . . . . . . . . .	L Near	 00000617 _TEXT	
+  out_loop32 . . . . . . . . . .	L Near	 00000621 _TEXT	
+  l16  . . . . . . . . . . . . .	L Near	 00000632 _TEXT	
+  outerloop16  . . . . . . . . .	L Near	 00000663 _TEXT	
+  direct_check16 . . . . . . . .	L Near	 0000066B _TEXT	
+  direct_loop16  . . . . . . . .	L Near	 0000066E _TEXT	
+  l_higher8  . . . . . . . . . .	L Near	 00000681 _TEXT	
+  outerloop_higher8  . . . . . .	L Near	 000006AB _TEXT	
+  direct_check_higher8 . . . . .	L Near	 000006B3 _TEXT	
+  direct_loop_higher8  . . . . .	L Near	 000006B6 _TEXT	
+  l_lower8 . . . . . . . . . . .	L Near	 000006C9 _TEXT	
+  outerloop_lower8 . . . . . . .	L Near	 000006F3 _TEXT	
+  direct_check_lower8  . . . . .	L Near	 000006FB _TEXT	
+  direct_loop_lower8 . . . . . .	L Near	 000006FE _TEXT	
+  l1 . . . . . . . . . . . . . .	L Near	 00000718 _TEXT	
+  next1  . . . . . . . . . . . .	L Near	 00000729 _TEXT	
+  next2  . . . . . . . . . . . .	L Near	 0000073C _TEXT	
+  next3  . . . . . . . . . . . .	L Near	 00000749 _TEXT	
+  check_immidiate1 . . . . . . .	L Near	 00000755 _TEXT	
+  jump1  . . . . . . . . . . . .	L Near	 0000075B _TEXT	
+  direct_jump  . . . . . . . . .	L Near	 00000769 _TEXT	
+  source_operand_checked . . . .	L Near	 0000077B _TEXT	
+convert_8emlemnts_array_into8bithexvalue . P Near   00000BF3 _TEXT	Length= 0000002D Public STDCALL
+  l1 . . . . . . . . . . . . . .	L Near	 00000C0D _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000275 Public STDCALL
+  n_start  . . . . . . . . . . .	L Near	 00000054 _TEXT	
+  continue . . . . . . . . . . .	L Near	 0000006A _TEXT	
+  movzx_nemonic  . . . . . . . .	L Near	 00000079 _TEXT	
+  n_over . . . . . . . . . . . .	L Near	 00000087 _TEXT	
+  d_start  . . . . . . . . . . .	L Near	 00000091 _TEXT	
+  d_over . . . . . . . . . . . .	L Near	 000000AB _TEXT	
+  s_start  . . . . . . . . . . .	L Near	 000000B3 _TEXT	
+  s_over . . . . . . . . . . . .	L Near	 000000C5 _TEXT	
+  check_next . . . . . . . . . .	L Near	 0000010B _TEXT	
+  calculate_r_m_byte . . . . . .	L Near	 00000110 _TEXT	
+  check_next1  . . . . . . . . .	L Near	 00000125 _TEXT	
+  check_next2  . . . . . . . . .	L Near	 0000013A _TEXT	
+  check_next3  . . . . . . . . .	L Near	 0000014F _TEXT	
+  final_result . . . . . . . . .	L Near	 00000156 _TEXT	
+  again_call . . . . . . . . . .	L Near	 0000015B _TEXT	
+  check_16 . . . . . . . . . . .	L Near	 0000018F _TEXT	
+  check_32 . . . . . . . . . . .	L Near	 000001CE _TEXT	
+  check_imm  . . . . . . . . . .	L Near	 00000207 _TEXT	
+  one_operand  . . . . . . . . .	L Near	 0000024E _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000269 _TEXT	
+printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+set_rm_number  . . . . . . . . .	P Near	 00000E46 _TEXT	Length= 000001AC Public STDCALL
+  inner_check  . . . . . . . . .	L Near	 00000E61 _TEXT	
+  inner_check_next1  . . . . . .	L Near	 00000E8A _TEXT	
+  inner_check_next2  . . . . . .	L Near	 00000E9C _TEXT	
+  final_check  . . . . . . . . .	L Near	 00000EB5 _TEXT	
+  check_next . . . . . . . . . .	L Near	 00000EC1 _TEXT	
+  inner_check_next3  . . . . . .	L Near	 00000ED7 _TEXT	
+  inner_check_next4  . . . . . .	L Near	 00000EE9 _TEXT	
+  final_check1 . . . . . . . . .	L Near	 00000F02 _TEXT	
+  check_next1  . . . . . . . . .	L Near	 00000F0E _TEXT	
+  inner_check_next5  . . . . . .	L Near	 00000F2F _TEXT	
+  inner_check_next6  . . . . . .	L Near	 00000F3C _TEXT	
+  inner_check_next8  . . . . . .	L Near	 00000F62 _TEXT	
+  inner_check_next7  . . . . . .	L Near	 00000F6E _TEXT	
+  inner_check_next9  . . . . . .	L Near	 00000F86 _TEXT	
+  check_next2  . . . . . . . . .	L Near	 00000F8F _TEXT	
+  inner_check_next10 . . . . . .	L Near	 00000FA5 _TEXT	
+  inner_check_next11 . . . . . .	L Near	 00000FAE _TEXT	
+  inner_check_next13 . . . . . .	L Near	 00000FC6 _TEXT	
+  inner_check_next12 . . . . . .	L Near	 00000FCF _TEXT	
+  inner_check_next14 . . . . . .	L Near	 00000FE7 _TEXT	
+  r_m_bits_calculated  . . . . .	L Near	 00000FEE _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000FEE _TEXT	
+store_compelete_r_mbyte  . . . .	P Near	 00000FF2 _TEXT	Length= 0000006D Public STDCALL
+  check_next . . . . . . . . . .	L Near	 00001013 _TEXT	
+  check_next1  . . . . . . . . .	L Near	 00001022 _TEXT	
+  check_next2  . . . . . . . . .	L Near	 00001031 _TEXT	
+  mod_bits_stored  . . . . . . .	L Near	 0000103A _TEXT	
+  l1 . . . . . . . . . . . . . .	L Near	 00001041 _TEXT	
+  l2 . . . . . . . . . . . . . .	L Near	 00001055 _TEXT	
+store_displacement_value . . . .	P Near	 00000938 _TEXT	Length= 000000E5 Public STDCALL
+  l1 . . . . . . . . . . . . . .	L Near	 00000954 _TEXT	
+  operand_checked  . . . . . . .	L Near	 00000963 _TEXT	
+  l2 . . . . . . . . . . . . . .	L Near	 0000096C _TEXT	
+  check_offset_register  . . . .	L Near	 00000979 _TEXT	
+  direct_loopl2  . . . . . . . .	L Near	 0000098B _TEXT	
+  check_32 . . . . . . . . . . .	L Near	 0000098D _TEXT	
+  check_16 . . . . . . . . . . .	L Near	 0000099F _TEXT	
+  memory_with_displacement . . .	L Near	 000009AF _TEXT	
+  outerloop  . . . . . . . . . .	L Near	 000009B6 _TEXT	
+  l3 . . . . . . . . . . . . . .	L Near	 000009BD _TEXT	
+  loop_inner . . . . . . . . . .	L Near	 000009C8 _TEXT	
+  check_howmany_bitsof_displacement 	L Near	 000009D7 _TEXT	
+  direct_addr  . . . . . . . . .	L Near	 000009E0 _TEXT	
+  next1  . . . . . . . . . . . .	L Near	 000009F0 _TEXT	
+  eight_bit  . . . . . . . . . .	L Near	 00000A09 _TEXT	
+  next2  . . . . . . . . . . . .	L Near	 00000A12 _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000A19 _TEXT	
+store_immidiate_value  . . . . .	P Near	 000008E7 _TEXT	Length= 00000051 Public STDCALL
+  l1 . . . . . . . . . . . . . .	L Near	 00000915 _TEXT	
+  loop_inner . . . . . . . . . .	L Near	 0000091E _TEXT	
+  ex . . . . . . . . . . . . . .	L Near	 00000936 _TEXT	
+wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+ALT_MASK . . . . . . . . . . . .	Number	 00000003h   
+CAPSLOCK_ON  . . . . . . . . . .	Number	 00000080h   
+CREATE_ALWAYS  . . . . . . . . .	Number	 00000002h   
+CREATE_NEW . . . . . . . . . . .	Number	 00000001h   
+CTRL_MASK  . . . . . . . . . . .	Number	 0000000Ch   
+CreateFile . . . . . . . . . . .	Text   	 CreateFileA
+DO_NOT_SHARE . . . . . . . . . .	Number	 00000000h   
+ENABLE_ECHO_INPUT  . . . . . . .	Number	 00000004h   
+ENABLE_LINE_INPUT  . . . . . . .	Number	 00000002h   
+ENABLE_MOUSE_INPUT . . . . . . .	Number	 00000010h   
+ENABLE_PROCESSED_INPUT . . . . .	Number	 00000001h   
+ENABLE_PROCESSED_OUTPUT  . . . .	Number	 00000001h   
+ENABLE_WINDOW_INPUT  . . . . . .	Number	 00000008h   
+ENABLE_WRAP_AT_EOL_OUTPUT  . . .	Number	 00000002h   
+ENHANCED_KEY . . . . . . . . . .	Number	 00000100h   
+FALSE  . . . . . . . . . . . . .	Number	 00000000h   
+FILE_APPEND_DATA . . . . . . . .	Number	 00000004h   
+FILE_ATTRIBUTE_ARCHIVE . . . . .	Number	 00000020h   
+FILE_ATTRIBUTE_COMPRESSED  . . .	Number	 00000800h   
+FILE_ATTRIBUTE_DEVICE  . . . . .	Number	 00000040h   
+FILE_ATTRIBUTE_DIRECTORY . . . .	Number	 00000010h   
+FILE_ATTRIBUTE_ENCRYPTED . . . .	Number	 00004000h   
+FILE_ATTRIBUTE_HIDDEN  . . . . .	Number	 00000002h   
+FILE_ATTRIBUTE_NORMAL  . . . . .	Number	 00000080h   
+FILE_ATTRIBUTE_NOT_CONTENT_INDEXED .	Number	 00002000h   
+FILE_ATTRIBUTE_OFFLINE . . . . .	Number	 00001000h   
+FILE_ATTRIBUTE_READONLY  . . . .	Number	 00000001h   
+FILE_ATTRIBUTE_REPARSE_POINT . .	Number	 00000400h   
+FILE_ATTRIBUTE_SPARSE_FILE . . .	Number	 00000200h   
+FILE_ATTRIBUTE_SYSTEM  . . . . .	Number	 00000004h   
+FILE_ATTRIBUTE_TEMPORARY . . . .	Number	 00000100h   
+FILE_BEGIN . . . . . . . . . . .	Number	 00000000h   
+FILE_CURRENT . . . . . . . . . .	Number	 00000001h   
+FILE_DELETE_CHILD  . . . . . . .	Number	 00000040h   
+FILE_END . . . . . . . . . . . .	Number	 00000002h   
+FILE_READ_DATA . . . . . . . . .	Number	 00000001h   
+FILE_SHARE_DELETE  . . . . . . .	Number	 00000004h   
+FILE_SHARE_READ  . . . . . . . .	Number	 00000001h   
+FILE_SHARE_WRITE . . . . . . . .	Number	 00000002h   
+FILE_WRITE_DATA  . . . . . . . .	Number	 00000002h   
+FOCUS_EVENT  . . . . . . . . . .	Number	 00000010h   
+FORMAT_MESSAGE_ALLOCATE_BUFFER .	Number	 00000100h   
+FORMAT_MESSAGE_FROM_SYSTEM . . .	Number	 00001000h   
+FormatMessage  . . . . . . . . .	Text   	 FormatMessageA
+GENERIC_ALL  . . . . . . . . . .	Number	 10000000h   
+GENERIC_EXECUTE  . . . . . . . .	Number	 20000000h   
+GENERIC_READ . . . . . . . . . .	Number	 -80000000h   
+GENERIC_WRITE  . . . . . . . . .	Number	 40000000h   
+GetCommandLine . . . . . . . . .	Text   	 GetCommandLineA
+HANDLE . . . . . . . . . . . . .	Text   	 DWORD
+HEAP_GENERATE_EXCEPTIONS . . . .	Number	 00000004h   
+HEAP_GROWABLE  . . . . . . . . .	Number	 00000002h   
+HEAP_NO_SERIALIZE  . . . . . . .	Number	 00000001h   
+HEAP_REALLOC_IN_PLACE_ONLY . . .	Number	 00000010h   
+HEAP_ZERO_MEMORY . . . . . . . .	Number	 00000008h   
+IDABORT  . . . . . . . . . . . .	Number	 00000003h   
+IDCANCEL . . . . . . . . . . . .	Number	 00000002h   
+IDCLOSE  . . . . . . . . . . . .	Number	 00000008h   
+IDCONTINUE . . . . . . . . . . .	Number	 0000000Bh   
+IDHELP . . . . . . . . . . . . .	Number	 00000009h   
+IDIGNORE . . . . . . . . . . . .	Number	 00000005h   
+IDNO . . . . . . . . . . . . . .	Number	 00000007h   
+IDOK . . . . . . . . . . . . . .	Number	 00000001h   
+IDRETRY  . . . . . . . . . . . .	Number	 00000004h   
+IDTIMEOUT  . . . . . . . . . . .	Number	 00007D00h   
+IDTRYAGAIN . . . . . . . . . . .	Number	 0000000Ah   
+IDYES  . . . . . . . . . . . . .	Number	 00000006h   
+INVALID_HANDLE_VALUE . . . . . .	Number	 -00000001h   
+KBDOWN_FLAG  . . . . . . . . . .	Number	 00000001h   
+KEY_EVENT  . . . . . . . . . . .	Number	 00000001h   
+KEY_MASKS  . . . . . . . . . . .	Number	 0000001Fh   
+LEFT_ALT_PRESSED . . . . . . . .	Number	 00000002h   
+LEFT_CTRL_PRESSED  . . . . . . .	Number	 00000008h   
+MB_ABORTRETRYIGNORE  . . . . . .	Number	 00000002h   
+MB_APPLMODAL . . . . . . . . . .	Number	 00000000h   
+MB_CANCELTRYCONTINUE . . . . . .	Number	 00000006h   
+MB_DEFBUTTON1  . . . . . . . . .	Number	 00000000h   
+MB_DEFBUTTON2  . . . . . . . . .	Number	 00000100h   
+MB_DEFBUTTON3  . . . . . . . . .	Number	 00000200h   
+MB_DEFBUTTON4  . . . . . . . . .	Number	 00000300h   
+MB_HELP  . . . . . . . . . . . .	Number	 00004000h   
+MB_ICONASTERISK  . . . . . . . .	Number	 00000040h   
+MB_ICONERROR . . . . . . . . . .	Number	 00000010h   
+MB_ICONEXCLAMATION . . . . . . .	Number	 00000030h   
+MB_ICONHAND  . . . . . . . . . .	Number	 00000010h   
+MB_ICONINFORMATION . . . . . . .	Number	 00000040h   
+MB_ICONQUESTION  . . . . . . . .	Number	 00000020h   
+MB_ICONSTOP  . . . . . . . . . .	Number	 00000010h   
+MB_ICONWARNING . . . . . . . . .	Number	 00000030h   
+MB_OKCANCEL  . . . . . . . . . .	Number	 00000001h   
+MB_OK  . . . . . . . . . . . . .	Number	 00000000h   
+MB_RETRYCANCEL . . . . . . . . .	Number	 00000005h   
+MB_SYSTEMMODAL . . . . . . . . .	Number	 00001000h   
+MB_TASKMODAL . . . . . . . . . .	Number	 00002000h   
+MB_USERICON  . . . . . . . . . .	Number	 00000080h   
+MB_YESNOCANCEL . . . . . . . . .	Number	 00000003h   
+MB_YESNO . . . . . . . . . . . .	Number	 00000004h   
+MENU_EVENT . . . . . . . . . . .	Number	 00000008h   
+MOUSE_EVENT  . . . . . . . . . .	Number	 00000002h   
+MessageBox . . . . . . . . . . .	Text   	 MessageBoxA
+NULL . . . . . . . . . . . . . .	Number	 00000000h   
+NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
+OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
+OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
+PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
+RIGHT_ALT_PRESSED  . . . . . . .	Number	 00000001h   
+RIGHT_CTRL_PRESSED . . . . . . .	Number	 00000004h   
+ReadConsoleInput . . . . . . . .	Text   	 ReadConsoleInputA
+ReadConsole  . . . . . . . . . .	Text   	 ReadConsoleA
+SCROLLLOCK_ON  . . . . . . . . .	Number	 00000040h   
+SHIFT_MASK . . . . . . . . . . .	Number	 00000010h   
+SHIFT_PRESSED  . . . . . . . . .	Number	 00000010h   
+STD_ERROR_HANDLE . . . . . . . .	Number	 -0000000Ch   
+STD_INPUT_HANDLE . . . . . . . .	Number	 -0000000Ah   
+STD_OUTPUT_HANDLE  . . . . . . .	Number	 -0000000Bh   
+SetConsoleTitle  . . . . . . . .	Text   	 SetConsoleTitleA
+TAB  . . . . . . . . . . . . . .	Number	 00000009h   
+TRUE . . . . . . . . . . . . . .	Number	 00000001h   
+TRUNCATE_EXISTING  . . . . . . .	Number	 00000005h   
+VK_11  . . . . . . . . . . . . .	Number	 000000BDh   
+VK_12  . . . . . . . . . . . . .	Number	 000000BBh   
+VK_ADD . . . . . . . . . . . . .	Number	 0000006Bh   
+VK_BACK  . . . . . . . . . . . .	Number	 00000008h   
+VK_CANCEL  . . . . . . . . . . .	Number	 00000003h   
+VK_CAPITAL . . . . . . . . . . .	Number	 00000014h   
+VK_CLEAR . . . . . . . . . . . .	Number	 0000000Ch   
+VK_CONTROL . . . . . . . . . . .	Number	 00000011h   
+VK_DECIMAL . . . . . . . . . . .	Number	 0000006Eh   
+VK_DELETE  . . . . . . . . . . .	Number	 0000002Eh   
+VK_DIVIDE  . . . . . . . . . . .	Number	 0000006Fh   
+VK_DOWN  . . . . . . . . . . . .	Number	 00000028h   
+VK_END . . . . . . . . . . . . .	Number	 00000023h   
+VK_ESCAPE  . . . . . . . . . . .	Number	 0000001Bh   
+VK_EXECUTE . . . . . . . . . . .	Number	 0000002Bh   
+VK_F10 . . . . . . . . . . . . .	Number	 00000079h   
+VK_F11 . . . . . . . . . . . . .	Number	 0000007Ah   
+VK_F12 . . . . . . . . . . . . .	Number	 0000007Bh   
+VK_F13 . . . . . . . . . . . . .	Number	 0000007Ch   
+VK_F14 . . . . . . . . . . . . .	Number	 0000007Dh   
+VK_F15 . . . . . . . . . . . . .	Number	 0000007Eh   
+VK_F16 . . . . . . . . . . . . .	Number	 0000007Fh   
+VK_F17 . . . . . . . . . . . . .	Number	 00000080h   
+VK_F18 . . . . . . . . . . . . .	Number	 00000081h   
+VK_F19 . . . . . . . . . . . . .	Number	 00000082h   
+VK_F1  . . . . . . . . . . . . .	Number	 00000070h   
+VK_F20 . . . . . . . . . . . . .	Number	 00000083h   
+VK_F21 . . . . . . . . . . . . .	Number	 00000084h   
+VK_F22 . . . . . . . . . . . . .	Number	 00000085h   
+VK_F23 . . . . . . . . . . . . .	Number	 00000086h   
+VK_F24 . . . . . . . . . . . . .	Number	 00000087h   
+VK_F2  . . . . . . . . . . . . .	Number	 00000071h   
+VK_F3  . . . . . . . . . . . . .	Number	 00000072h   
+VK_F4  . . . . . . . . . . . . .	Number	 00000073h   
+VK_F5  . . . . . . . . . . . . .	Number	 00000074h   
+VK_F6  . . . . . . . . . . . . .	Number	 00000075h   
+VK_F7  . . . . . . . . . . . . .	Number	 00000076h   
+VK_F8  . . . . . . . . . . . . .	Number	 00000077h   
+VK_F9  . . . . . . . . . . . . .	Number	 00000078h   
+VK_HELP  . . . . . . . . . . . .	Number	 0000002Fh   
+VK_HOME  . . . . . . . . . . . .	Number	 00000024h   
+VK_INSERT  . . . . . . . . . . .	Number	 0000002Dh   
+VK_LBUTTON . . . . . . . . . . .	Number	 00000001h   
+VK_LCONTROL  . . . . . . . . . .	Number	 000000A2h   
+VK_LEFT  . . . . . . . . . . . .	Number	 00000025h   
+VK_LMENU . . . . . . . . . . . .	Number	 000000A4h   
+VK_LSHIFT  . . . . . . . . . . .	Number	 000000A0h   
+VK_MENU  . . . . . . . . . . . .	Number	 00000012h   
+VK_MULTIPLY  . . . . . . . . . .	Number	 0000006Ah   
+VK_NEXT  . . . . . . . . . . . .	Number	 00000022h   
+VK_NUMLOCK . . . . . . . . . . .	Number	 00000090h   
+VK_NUMPAD0 . . . . . . . . . . .	Number	 00000060h   
+VK_NUMPAD1 . . . . . . . . . . .	Number	 00000061h   
+VK_NUMPAD2 . . . . . . . . . . .	Number	 00000062h   
+VK_NUMPAD3 . . . . . . . . . . .	Number	 00000063h   
+VK_NUMPAD4 . . . . . . . . . . .	Number	 00000064h   
+VK_NUMPAD5 . . . . . . . . . . .	Number	 00000065h   
+VK_NUMPAD6 . . . . . . . . . . .	Number	 00000066h   
+VK_NUMPAD7 . . . . . . . . . . .	Number	 00000067h   
+VK_NUMPAD8 . . . . . . . . . . .	Number	 00000068h   
+VK_NUMPAD9 . . . . . . . . . . .	Number	 00000069h   
+VK_PAUSE . . . . . . . . . . . .	Number	 00000013h   
+VK_PRINT . . . . . . . . . . . .	Number	 0000002Ah   
+VK_PRIOR . . . . . . . . . . . .	Number	 00000021h   
+VK_RBUTTON . . . . . . . . . . .	Number	 00000002h   
+VK_RCONTROL  . . . . . . . . . .	Number	 000000A3h   
+VK_RETURN  . . . . . . . . . . .	Number	 0000000Dh   
+VK_RIGHT . . . . . . . . . . . .	Number	 00000027h   
+VK_RMENU . . . . . . . . . . . .	Number	 000000A5h   
+VK_RSHIFT  . . . . . . . . . . .	Number	 000000A1h   
+VK_SCROLL  . . . . . . . . . . .	Number	 00000091h   
+VK_SEPARATER . . . . . . . . . .	Number	 0000006Ch   
+VK_SHIFT . . . . . . . . . . . .	Number	 00000010h   
+VK_SNAPSHOT  . . . . . . . . . .	Number	 0000002Ch   
+VK_SPACE . . . . . . . . . . . .	Number	 00000020h   
+VK_SUBTRACT  . . . . . . . . . .	Number	 0000006Dh   
+VK_TAB . . . . . . . . . . . . .	Number	 00000009h   
+VK_UP  . . . . . . . . . . . . .	Number	 00000026h   
+WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
+WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
+WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
+add_opcode . . . . . . . . . . .	Byte	 00000234 _DATA	
+assembly_instruction . . . . . .	Byte	 000000AC _DATA	
+black  . . . . . . . . . . . . .	Number	 00000000h   
+blue . . . . . . . . . . . . . .	Number	 00000001h   
+brown  . . . . . . . . . . . . .	Number	 00000006h   
+check_16bit  . . . . . . . . . .	Byte	 000001D6 _DATA	
+check_al . . . . . . . . . . . .	Byte	 000001D4 _DATA	
+check_ax . . . . . . . . . . . .	Byte	 000001D5 _DATA	
+check_displacement . . . . . . .	Byte	 00000216 _DATA	
+check_immidiate  . . . . . . . .	Byte	 00000163 _DATA	
+check_one_operand  . . . . . . .	Byte	 00000217 _DATA	
+complete_r_mbyte . . . . . . . .	Byte	 00000222 _DATA	
+cyan . . . . . . . . . . . . . .	Number	 00000003h   
+d_bit  . . . . . . . . . . . . .	Byte	 00000211 _DATA	
+d_length . . . . . . . . . . . .	DWord	 0000013F _DATA	
+d_operand_check  . . . . . . . .	Byte	 00000213 _DATA	
+d_operand  . . . . . . . . . . .	Byte	 0000010D _DATA	
+data_size_count  . . . . . . . .	Byte	 00000152 _DATA	
+data_sizes . . . . . . . . . . .	Byte	 00000143 _DATA	
+displacement_value . . . . . . .	DWord	 00000153 _DATA	
+exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
+gray . . . . . . . . . . . . . .	Number	 00000008h   
+green  . . . . . . . . . . . . .	Number	 00000002h   
+hex_value_opcode . . . . . . . .	Byte	 0000022B _DATA	
+immidiate  . . . . . . . . . . .	DWord	 0000015F _DATA	
+input_length . . . . . . . . . .	Number	 0000001Eh   
+length_string  . . . . . . . . .	DWord	 000000CA _DATA	
+lightBlue  . . . . . . . . . . .	Number	 00000009h   
+lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
+lightGray  . . . . . . . . . . .	Number	 00000007h   
+lightGreen . . . . . . . . . . .	Number	 0000000Ah   
+lightMagenta . . . . . . . . . .	Number	 0000000Dh   
+lightRed . . . . . . . . . . . .	Number	 0000000Ch   
+magenta  . . . . . . . . . . . .	Number	 00000005h   
+memory_format  . . . . . . . . .	Byte	 0000022A _DATA	
+mod_bits . . . . . . . . . . . .	Byte	 00000215 _DATA	
+mov_opcode . . . . . . . . . . .	Byte	 0000022C _DATA	
+n_length . . . . . . . . . . . .	DWord	 000000D3 _DATA	
+nemonic_count  . . . . . . . . .	Byte	 0000020F _DATA	
+nemonic_number . . . . . . . . .	Byte	 00000210 _DATA	
+nemonic  . . . . . . . . . . . .	Byte	 000000CE _DATA	
+opcode_extension_nemonic . . . .	Byte	 000001D7 _DATA	
+opcode_extension . . . . . . . .	Byte	 000001F3 _DATA	
+prefix_byte  . . . . . . . . . .	Byte	 00000221 _DATA	
+r_m_bits . . . . . . . . . . . .	Byte	 0000021D _DATA	
+r_m_number . . . . . . . . . . .	Byte	 00000220 _DATA	
+red  . . . . . . . . . . . . . .	Number	 00000004h   
+register16 . . . . . . . . . . .	Byte	 00000184 _DATA	
+register32 . . . . . . . . . . .	Byte	 00000164 _DATA	
+register_bits  . . . . . . . . .	Byte	 00000218 _DATA	
+register_count . . . . . . . . .	Byte	 0000021C _DATA	
+register_higher_8  . . . . . . .	Byte	 000001A8 _DATA	
+register_lower_8 . . . . . . . .	Byte	 0000019C _DATA	
+register_number  . . . . . . . .	Byte	 0000021B _DATA	
+register_values  . . . . . . . .	Byte	 000001B4 _DATA	
+result . . . . . . . . . . . . .	Byte	 0000008A _DATA	
+s_length . . . . . . . . . . . .	DWord	 00000109 _DATA	
+s_operand_check  . . . . . . . .	Byte	 00000214 _DATA	
+s_operand  . . . . . . . . . . .	Byte	 000000D7 _DATA	
+str1 . . . . . . . . . . . . . .	Byte	 00000067 _DATA	
+str_title  . . . . . . . . . . .	Byte	 00000000 _DATA	
+sub_opcode . . . . . . . . . . .	Byte	 0000023C _DATA	
+temp_displacement_value  . . . .	Byte	 00000157 _DATA	
+w_bit  . . . . . . . . . . . . .	Byte	 00000212 _DATA	
+white  . . . . . . . . . . . . .	Number	 0000000Fh   
+wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
+xchg_opcode  . . . . . . . . . .	Byte	 00000244 _DATA	
+yellow . . . . . . . . . . . . .	Number	 0000000Eh   
+
+	   0 Warnings
+	   0 Errors
